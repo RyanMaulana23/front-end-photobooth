@@ -1,5 +1,5 @@
 
-import Sidebar from './components/Sidebar.jsx'
+import Sidebar from './componeents/Sidebar.jsx'
 import Topbar from './components/Topbar.jsx'
 import Hero from './components/Hero.jsx'
 import Footer from './components/Footer.jsx'
