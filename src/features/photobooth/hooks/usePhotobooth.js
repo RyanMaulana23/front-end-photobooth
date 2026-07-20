@@ -1,19 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { STEPS } from '../../../constants/photobooth';
-import { compilePhotoStrip } from '../utils/canvasHelper';
-import useCamera from '../../../hooks/useCamera';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { STEPS, getMaxPhotos } from "../../../constants/photobooth";
+import { compilePhotoStrip } from "../utils/canvasHelper";
+import useCamera from "../../../hooks/useCamera";
 
 // Import decoupled handlers (1 file 1 function)
-import triggerCaptureSequence from './utils/triggerCaptureSequence';
-import takeSnapshot from './utils/takeSnapshot';
-import handleStartCapture from './utils/handleStartCapture';
-import handleRetakeSelect from './utils/handleRetakeSelect';
-import handleFormSubmit from './utils/handleFormSubmit';
-import handlePrintTrigger from './utils/handlePrintTrigger';
-import handleDownloadStrip from './utils/handleDownloadStrip';
-import resetAll from './utils/resetAll';
-import getProgressPercent from './utils/getProgressPercent';
+import triggerCaptureSequence from "./utils/triggerCaptureSequence";
+import takeSnapshot from "./utils/takeSnapshot";
+import handleStartCapture from "./utils/handleStartCapture";
+import handleRetakeSelect from "./utils/handleRetakeSelect";
+import handleFormSubmit from "./utils/handleFormSubmit";
+import handlePrintTrigger from "./utils/handlePrintTrigger";
+import handleDownloadStrip from "./utils/handleDownloadStrip";
+import resetAll from "./utils/resetAll";
+import getProgressPercent from "./utils/getProgressPercent";
 
 export default function usePhotobooth() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export default function usePhotobooth() {
   // States
   // ==========================================
   const [step, setStep] = useState(STEPS.TEMPLATE);
-  const [template, setTemplate] = useState('layout1');
+  const [template, setTemplate] = useState("layout1");
   const [compiledStrip, setCompiledStrip] = useState(null);
   const [photos, setPhotos] = useState([null, null, null, null]);
   const [capturingIndex, setCapturingIndex] = useState(0);
@@ -33,18 +33,18 @@ export default function usePhotobooth() {
   // Camera & Filter Settings
   const [mirror, setMirror] = useState(true);
   const [flashEnabled, setFlashEnabled] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('none');
+  const [activeFilter, setActiveFilter] = useState("none");
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [countdownTime, setCountdownTime] = useState(3);
 
   // Form Input
   const [formData, setFormData] = useState({
-    nama: '',
-    npm: '',
-    email: '',
-    nohp: '',
-    jurusan: '',
-    ig: '',
+    nama: "",
+    npm: "",
+    email: "",
+    nohp: "",
+    jurusan: "",
+    ig: "",
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -77,10 +77,19 @@ export default function usePhotobooth() {
   // Attach camera stream to HTML Video element
   useEffect(() => {
     if (videoRef.current && cameraStream) {
-      videoRef.current.srcObject = cameraStream;
-      videoRef.current.play().catch((err) => {
-        console.warn('Video playback blocked or failed:', err);
-      });
+      if (videoRef.current && cameraStream) {
+        videoRef.current.srcObject = cameraStream;
+
+        videoRef.current.setAttribute("playsinline", true);
+
+        videoRef.current.muted = true;
+
+        videoRef.current.autoplay = true;
+
+        videoRef.current.playsInline = true;
+
+        videoRef.current.play().catch(console.warn);
+      }
     }
   }, [cameraStream, step]);
 
@@ -92,7 +101,11 @@ export default function usePhotobooth() {
       }, 1000);
       return () => clearTimeout(timer);
     } else if (countdown === 0) {
-      callTakeSnapshot();
+      // Let the final prompt stay visible before the camera takes the photo.
+      const timer = setTimeout(() => {
+        callTakeSnapshot();
+      }, 800);
+      return () => clearTimeout(timer);
     }
   }, [countdown]);
 
@@ -108,11 +121,19 @@ export default function usePhotobooth() {
 
   // Canvas photo strip compiler
   useEffect(() => {
-    if (step === STEPS.PREVIEW || step === STEPS.EDIT_DECISION) {
-      compilePhotoStrip(template, photos).then((dataUrl) => {
-        if (dataUrl) setCompiledStrip(dataUrl);
-      });
-    }
+    if (step !== STEPS.PREVIEW && step !== STEPS.EDIT_DECISION) return;
+
+    const required = getMaxPhotos(template);
+
+    const ready = photos.filter(Boolean).length === required;
+
+    if (!ready) return;
+
+    compilePhotoStrip(template, photos).then((dataUrl) => {
+      if (dataUrl) {
+        setCompiledStrip(dataUrl);
+      }
+    });
   }, [step, photos, template]);
 
   // Exit thank you screen when timer reaches 0

@@ -2,15 +2,16 @@ import {
   FILTERS,
   LAYOUT_CONFIGS,
   getMaxPhotos,
-} from '../../../../constants/photobooth';
-import { drawMockAvatar } from '../../utils/mockAvatar';
-import { playShutterSound } from '../../../../utils/audio';
+} from "../../../../constants/photobooth";
+import { drawMockAvatar } from "../../utils/mockAvatar";
+import { playShutterSound } from "../../../../utils/audio";
 
 /**
  * Capture frame from live camera stream or draw mock visual when offline.
  *
  * @param {object} params - State getters and setters for the snapshot
  */
+
 export default function takeSnapshot({
   flashEnabled,
   setFlash,
@@ -40,38 +41,39 @@ export default function takeSnapshot({
     playShutterSound();
   }
 
-  let photoData = '';
+  let photoData = "";
   const config = LAYOUT_CONFIGS[template];
   const slot = config.slots[capturingIndex];
   const filterVal =
-    FILTERS.find((f) => f.id === activeFilter)?.canvasFilter || 'none';
+    FILTERS.find((f) => f.id === activeFilter)?.canvasFilter || "none";
 
-  if (hasCamera && videoRef.current) {
-    // 2. Render actual camera frame onto canvas slot
-    const canvas = document.createElement('canvas');
-    canvas.width = slot.w;
-    canvas.height = slot.h;
-    const ctx = canvas.getContext('2d');
-    ctx.filter = filterVal;
+  const video = videoRef.current;
+  const vWidth = video?.videoWidth ?? 0;
+  const vHeight = video?.videoHeight ?? 0;
+  const hasVideoFrame = hasCamera && video && vWidth > 0 && vHeight > 0;
 
-    const video = videoRef.current;
-    const vWidth = video.videoWidth || 640;
-    const vHeight = video.videoHeight || 480;
-    const slotAspect = slot.w / slot.h;
-    const videoAspect = vWidth / vHeight;
+  // Capture at the exact slot aspect ratio so the saved photo matches the
+  // camera preview and fills the chosen frame without bars or distortion.
+  const canvas = document.createElement("canvas");
+  canvas.width = slot.w;
+  canvas.height = slot.h;
 
-    let sx = 0,
-      sy = 0,
-      sw = vWidth,
-      sh = vHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.filter = filterVal;
 
-    if (videoAspect > slotAspect) {
-      sw = vHeight * slotAspect;
-      sh = vHeight;
+  if (hasVideoFrame) {
+    const canvasRatio = canvas.width / canvas.height;
+    const videoRatio = vWidth / vHeight;
+    let sx = 0;
+    let sy = 0;
+    let sw = vWidth;
+    let sh = vHeight;
+
+    if (videoRatio > canvasRatio) {
+      sw = vHeight * canvasRatio;
       sx = (vWidth - sw) / 2;
     } else {
-      sw = vWidth;
-      sh = vWidth / slotAspect;
+      sh = vWidth / canvasRatio;
       sy = (vHeight - sh) / 2;
     }
 
@@ -79,19 +81,15 @@ export default function takeSnapshot({
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
     }
-    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, slot.w, slot.h);
-    photoData = canvas.toDataURL('image/png');
-  } else {
-    // 3. Render animated mock visual placeholder
-    const canvas = document.createElement('canvas');
-    canvas.width = slot.w;
-    canvas.height = slot.h;
-    const ctx = canvas.getContext('2d');
-    ctx.filter = filterVal;
 
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  } else {
+    // The camera can report as available before its first video frame arrives.
+    // Keep the capture flow valid instead of saving an empty image in that case.
     drawMockAvatar(ctx, slot.w, slot.h, simulatedAvatarSeed, capturingIndex);
-    photoData = canvas.toDataURL('image/png');
   }
+
+  photoData = canvas.toDataURL("image/png");
 
   // 4. Save photo data
   setPhotos((prev) => {

@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 export default function useCamera(step, STEPS) {
   const [devices, setDevices] = useState([]);
-  const [selectedDevice, setSelectedDevice] = useState('');
+  const [selectedDevice, setSelectedDevice] = useState("");
   const [cameraStream, setCameraStream] = useState(null);
   const [hasCamera, setHasCamera] = useState(false);
+
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
   const stopCamera = useCallback(() => {
     if (cameraStream) {
@@ -13,77 +15,112 @@ export default function useCamera(step, STEPS) {
     }
   }, [cameraStream]);
 
-  const startCamera = useCallback(async (deviceId) => {
+  const loadDevices = async () => {
     try {
-      // stop existing camera first
-      if (cameraStream) {
-        cameraStream.getTracks().forEach((track) => track.stop());
+      const list = await navigator.mediaDevices.enumerateDevices();
+
+      const cams = list.filter((d) => d.kind === "videoinput");
+
+      setDevices(cams);
+
+      if (!selectedDevice && cams.length > 0) {
+        setSelectedDevice(cams[0].deviceId);
       }
-      const constraints = {
-        video: {
-          width: 640,
-          height: 480,
-          deviceId: deviceId ? { exact: deviceId } : undefined,
-        },
-        audio: false,
-      };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      setCameraStream(stream);
-      setHasCamera(true);
-      return stream;
-    } catch (e) {
-      console.warn(
-        'Webcam not found or access denied, using simulated camera:',
-        e,
-      );
-      setHasCamera(false);
-      setCameraStream(null);
-      return null;
+    } catch (err) {
+      console.warn(err);
     }
-  }, [cameraStream]);
+  };
 
-  // Enumerate video devices on mount
-  useEffect(() => {
-    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then((deviceInfos) => {
-          const videoDevices = deviceInfos.filter(
-            (d) => d.kind === 'videoinput',
-          );
-          setDevices(videoDevices);
-          if (videoDevices.length > 0) {
-            setSelectedDevice(videoDevices[0].deviceId);
-          }
-        })
-        .catch((err) => {
-          console.warn('Could not list cameras:', err);
-        });
-    }
-  }, []);
+  const startCamera = useCallback(
+    async (deviceId = "") => {
+      stopCamera();
 
-  // Start/Stop camera based on active step & device selection
+      try {
+        let constraints = {
+          audio: false,
+          video: {
+            width: {
+              ideal: 1920,
+            },
+            height: {
+              ideal: 1080,
+            },
+          },
+        };
+
+        if (deviceId) {
+          constraints.video.deviceId = {
+            exact: deviceId,
+          };
+        } else {
+          constraints.video.facingMode = isMobile
+            ? {
+                ideal: "user",
+              }
+            : "user";
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        setCameraStream(stream);
+
+        setHasCamera(true);
+
+        await loadDevices();
+
+        return stream;
+      } catch (err) {
+        console.warn("Device gagal, mencoba fallback...", err);
+
+        try {
+          const fallback = await navigator.mediaDevices.getUserMedia({
+            video: true,
+
+            audio: false,
+          });
+
+          setCameraStream(fallback);
+
+          setHasCamera(true);
+
+          await loadDevices();
+
+          return fallback;
+        } catch (e) {
+          console.warn(e);
+
+          setHasCamera(false);
+
+          return null;
+        }
+      }
+    },
+    [stopCamera],
+  );
+
   useEffect(() => {
     if (step === STEPS.PHOTO_CAPTURE) {
       startCamera(selectedDevice);
     } else {
       stopCamera();
     }
-    return () => {
-      // Cleanup stream on unmount
-      if (cameraStream) {
-        cameraStream.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, [step, selectedDevice, startCamera, stopCamera, STEPS.PHOTO_CAPTURE]);
+
+    return stopCamera;
+  }, [step, selectedDevice]);
 
   return {
     devices,
+
     selectedDevice,
+
     setSelectedDevice,
+
     cameraStream,
+
     hasCamera,
+
     startCamera,
+
     stopCamera,
   };
 }

@@ -125,9 +125,18 @@ export default function CaptureStep({
         {/* Countdown Overlay */}
         {countdown >= 0 && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center animate-fade-in">
-            <div className="text-white text-8xl md:text-9xl font-bold font-display animate-ping [animation-duration:1s]">
+            <div
+              className={`text-white text-8xl md:text-9xl font-bold font-display animate-ping [animation-duration:1s] ${
+                countdown === 0 ? 'hidden' : ''
+              }`}
+            >
               {countdown === 0 ? '📸' : countdown}
             </div>
+            {countdown === 0 && (
+              <div className="text-white text-5xl md:text-7xl font-bold font-display animate-ping [animation-duration:1s]">
+                CHEESE!
+              </div>
+            )}
           </div>
         )}
 
