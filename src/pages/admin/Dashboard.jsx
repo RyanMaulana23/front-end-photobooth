@@ -25,11 +25,7 @@ export default function AdminDashboard() {
   }, [token, navigate]);
 
   // Queries
-  const {
-    data: profile,
-    isLoading: isProfileLoading,
-    isError: isProfileError,
-  } = useAdminProfile();
+  const { data: profile, isLoading: isProfileLoading } = useAdminProfile();
   const { data: sessions = [], isLoading: isSessionsLoading } =
     useAdminSessions();
   const { data: customers = [], isLoading: isCustomersLoading } =
@@ -123,7 +119,7 @@ export default function AdminDashboard() {
         {/* Main Content Area */}
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-8">
           {/* Welcome Banner */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-gradient-to-r from-sidebar via-cream to-white border border-line shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-linear-to-r from-sidebar via-cream to-white border border-line shadow-xs">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold font-display text-maroon m-0 tracking-tight">
                 Ringkasan Pengelolaan Photobooth
