@@ -4,6 +4,9 @@ import Home from '../pages/Home';
 import Photobooth from '../pages/Photobooth';
 import About from '../pages/About';
 import Gallery from '../pages/Gallery';
+import Login from '../pages/auth/Login';
+import Register from '../pages/auth/Register';
+import AdminDashboard from '../pages/admin/Dashboard';
 
 export default function AllRoutes() {
   return (
@@ -15,6 +18,14 @@ export default function AllRoutes() {
           <Route path="about" element={<About />} />
           <Route path="gallery" element={<Gallery />} />
         </Route>
+
+        <Route path="auth">
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
+
+        <Route path="admin" element={<AdminDashboard />} />
+        <Route path="admin/dashboard" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );

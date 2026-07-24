@@ -1,6 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import api from '../config/axios';
 import { LAYOUT_CONFIGS, FILTERS, getMaxPhotos } from '../constants/photobooth';
+
+const getTemplateByPhotosCount = (photosCount, sessionId = '') => {
+  if (photosCount === 2) return 'layout5';
+  if (photosCount === 3) {
+    const code = sessionId ? (sessionId.charCodeAt(sessionId.length - 1) || 0) : 0;
+    return code % 2 === 0 ? 'layout3' : 'layout4';
+  }
+  if (photosCount === 4) {
+    const code = sessionId ? (sessionId.charCodeAt(sessionId.length - 1) || 0) : 0;
+    return code % 2 === 0 ? 'layout1' : 'layout2';
+  }
+  return 'layout1';
+};
+
 
 /* =========================================================
     Mock Data
@@ -122,7 +138,8 @@ function PhotoStrip({ template, photos, filter, height = 260 }) {
    ========================================================= */
 function GalleryCard({ session, stripHeight = 280 }) {
   const [hovered, setHovered] = useState(false);
-  const config = LAYOUT_CONFIGS[session.template];
+  const template = session.template || getTemplateByPhotosCount(session.photos.length, String(session.id));
+  const config = LAYOUT_CONFIGS[template];
   // Calculate card width based on strip aspect ratio + polaroid padding
   const innerH = stripHeight - 36 - 16; // subtract caption(36) + top+bottom padding(8+8)
   const innerW = config
@@ -132,7 +149,7 @@ function GalleryCard({ session, stripHeight = 280 }) {
 
   return (
     <div
-      className="relative flex-shrink-0 cursor-pointer"
+      className="relative shrink-0 cursor-pointer"
       style={{
         width: cardWidth,
         height: stripHeight,
@@ -159,9 +176,9 @@ function GalleryCard({ session, stripHeight = 280 }) {
       >
         {/* Photo strip — exact width/height so photos are always visible */}
         <PhotoStrip
-          template={session.template}
+          template={template}
           photos={session.photos}
-          filter={session.filter}
+          filter={session.filter || 'none'}
           height={innerH}
         />
 
@@ -313,12 +330,25 @@ function FloatingOrb({ className, style }) {
      Main Gallery Page
    ========================================================= */
 export default function Gallery() {
-  const [row1, setRow1] = useState(() =>
-    generateRandomSessions(16).slice(0, 8),
-  );
-  const [row2, setRow2] = useState(() =>
-    generateRandomSessions(16).slice(8, 16),
-  );
+  const { data: serverSessions = [] } = useQuery({
+    queryKey: ['gallery', 'sessions'],
+    queryFn: async () => {
+      const response = await api.get('/photo-sessions/gallery');
+      return response.data?.data || [];
+    },
+    staleTime: 1000 * 30,
+  });
+
+  // Fallback to random mock sessions if no real database sessions exist yet
+  const displaySessions = serverSessions.length > 0
+    ? serverSessions
+    : generateRandomSessions(16);
+
+  const half = Math.ceil(displaySessions.length / 2);
+  const row1 = displaySessions.slice(0, half);
+  const row2 = displaySessions.slice(half);
+
+
 
   return (
     <section className="flex-1 relative overflow-hidden bg-cream">
