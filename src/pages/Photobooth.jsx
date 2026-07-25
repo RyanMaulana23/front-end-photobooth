@@ -53,6 +53,7 @@ export default function Photobooth() {
     selectedDevice,
     setSelectedDevice,
     hasCamera,
+    submitSessionMutation,
     triggerCaptureSequence,
     handleStartCapture,
     handleRetakeSelect,
@@ -157,6 +158,7 @@ export default function Photobooth() {
           setFormData={setFormData}
           formErrors={formErrors}
           handleFormSubmit={handleFormSubmit}
+          isSubmitting={submitSessionMutation?.isPending}
         />
       )}
 

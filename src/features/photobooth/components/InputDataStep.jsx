@@ -1,9 +1,43 @@
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createCustomerValidation } from '../schemas/customer.schema';
+
 export default function InputDataStep({
   formData,
   setFormData,
-  formErrors,
   handleFormSubmit,
+  isSubmitting,
 }) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(createCustomerValidation),
+    defaultValues: {
+      name: formData.nama || '',
+      email: formData.email || '',
+      npm: formData.npm || '',
+      phoneNumber: formData.nohp || '',
+      major: formData.jurusan || '',
+      instagramUsername: formData.ig ? formData.ig.replace(/^@/, '') : '',
+    },
+  });
+
+  const onSubmit = (data) => {
+    // Keep local formData in sync for download file names & legacy fallbacks
+    setFormData({
+      nama: data.name,
+      email: data.email,
+      npm: data.npm,
+      nohp: data.phoneNumber || '',
+      jurusan: data.major,
+      ig: data.instagramUsername ? `@${data.instagramUsername}` : '',
+    });
+
+    handleFormSubmit(data);
+  };
+
   return (
     <div className="w-full max-w-lg animate-fade-in">
       <div className="text-center mb-6">
@@ -19,32 +53,31 @@ export default function InputDataStep({
       </div>
 
       <form
-        onSubmit={handleFormSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         className="bg-white rounded-3xl border border-line p-6 md:p-8 shadow-sm flex flex-col gap-4"
       >
         {/* Nama Field */}
         <div>
           <label
-            htmlFor="nama"
+            htmlFor="name"
             className="block text-sm font-semibold text-[#5c5449] mb-1"
           >
             Nama Lengkap
           </label>
           <input
-            id="nama"
+            id="name"
             type="text"
-            value={formData.nama}
-            onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
+            {...register('name')}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
-              formErrors.nama
+              errors.name
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-line focus:border-terracotta'
             }`}
             placeholder="cth: Ryan Maulana"
           />
-          {formErrors.nama && (
+          {errors.name && (
             <p className="text-red-500 text-xs mt-1 font-semibold">
-              {formErrors.nama}
+              {errors.name.message}
             </p>
           )}
         </div>
@@ -60,18 +93,17 @@ export default function InputDataStep({
           <input
             id="npm"
             type="text"
-            value={formData.npm}
-            onChange={(e) => setFormData({ ...formData, npm: e.target.value })}
+            {...register('npm')}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
-              formErrors.npm
+              errors.npm
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-line focus:border-terracotta'
             }`}
             placeholder="cth: 50421888"
           />
-          {formErrors.npm && (
+          {errors.npm && (
             <p className="text-red-500 text-xs mt-1 font-semibold">
-              {formErrors.npm}
+              {errors.npm.message}
             </p>
           )}
         </div>
@@ -87,20 +119,17 @@ export default function InputDataStep({
           <input
             id="email"
             type="email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            {...register('email')}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
-              formErrors.email
+              errors.email
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-line focus:border-terracotta'
             }`}
             placeholder="cth: ryan@student.univ.ac.id"
           />
-          {formErrors.email && (
+          {errors.email && (
             <p className="text-red-500 text-xs mt-1 font-semibold">
-              {formErrors.email}
+              {errors.email.message}
             </p>
           )}
         </div>
@@ -108,26 +137,25 @@ export default function InputDataStep({
         {/* No HP Field */}
         <div>
           <label
-            htmlFor="nohp"
+            htmlFor="phoneNumber"
             className="block text-sm font-semibold text-[#5c5449] mb-1"
           >
             Nomor HP (WhatsApp)
           </label>
           <input
-            id="nohp"
+            id="phoneNumber"
             type="text"
-            value={formData.nohp}
-            onChange={(e) => setFormData({ ...formData, nohp: e.target.value })}
+            {...register('phoneNumber')}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
-              formErrors.nohp
+              errors.phoneNumber
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-line focus:border-terracotta'
             }`}
             placeholder="cth: 081234567890"
           />
-          {formErrors.nohp && (
+          {errors.phoneNumber && (
             <p className="text-red-500 text-xs mt-1 font-semibold">
-              {formErrors.nohp}
+              {errors.phoneNumber.message}
             </p>
           )}
         </div>
@@ -135,28 +163,25 @@ export default function InputDataStep({
         {/* Jurusan Field */}
         <div>
           <label
-            htmlFor="jurusan"
+            htmlFor="major"
             className="block text-sm font-semibold text-[#5c5449] mb-1"
           >
             Jurusan / Program Studi
           </label>
           <input
-            id="jurusan"
+            id="major"
             type="text"
-            value={formData.jurusan}
-            onChange={(e) =>
-              setFormData({ ...formData, jurusan: e.target.value })
-            }
+            {...register('major')}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
-              formErrors.jurusan
+              errors.major
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-line focus:border-terracotta'
             }`}
             placeholder="cth: Informatika"
           />
-          {formErrors.jurusan && (
+          {errors.major && (
             <p className="text-red-500 text-xs mt-1 font-semibold">
-              {formErrors.jurusan}
+              {errors.major.message}
             </p>
           )}
         </div>
@@ -164,39 +189,35 @@ export default function InputDataStep({
         {/* Instagram Field */}
         <div>
           <label
-            htmlFor="ig"
+            htmlFor="instagramUsername"
             className="block text-sm font-semibold text-[#5c5449] mb-1"
           >
             Username Instagram (IG)
           </label>
           <input
-            id="ig"
+            id="instagramUsername"
             type="text"
-            value={formData.ig}
-            onChange={(e) => {
-              let val = e.target.value;
-              if (val && !val.startsWith('@')) val = '@' + val;
-              setFormData({ ...formData, ig: val });
-            }}
+            {...register('instagramUsername')}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
-              formErrors.ig
+              errors.instagramUsername
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-line focus:border-terracotta'
             }`}
-            placeholder="cth: @ryanmaulana"
+            placeholder="cth: ryanmaulana"
           />
-          {formErrors.ig && (
+          {errors.instagramUsername && (
             <p className="text-red-500 text-xs mt-1 font-semibold">
-              {formErrors.ig}
+              {errors.instagramUsername.message}
             </p>
           )}
         </div>
 
         <button
           type="submit"
-          className="mt-4 rounded-pill bg-terracotta hover:bg-terracotta-dark py-4 text-md font-bold text-white shadow-md transition-all text-center"
+          disabled={isSubmitting}
+          className="mt-4 rounded-pill bg-terracotta hover:bg-terracotta-dark py-4 text-md font-bold text-white shadow-md transition-all text-center cursor-pointer disabled:opacity-50"
         >
-          Kirim Foto ke Email ✉️
+          {isSubmitting ? 'Mengirim Data...' : 'Kirim Foto ke Email ✉️'}
         </button>
       </form>
     </div>

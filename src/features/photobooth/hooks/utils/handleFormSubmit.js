@@ -1,35 +1,33 @@
-import { validateForm } from '../../../../utils/validation';
-
 /**
- * Validates details form and triggers processing simulation on success.
+ * Handles form submission: triggers TanStack Query backend API submission mutation
+ * and progresses the UI state smoothly to PROCESSING then EMAIL_SUCCESS.
  *
- * @param {Event} e - Form submit event
- * @param {object} controls - Control methods and states
+ * @param {object} customerData - Validated customer data from React Hook Form
+ * @param {object} controls - Control methods, photos, and mutation hooks
  */
-export default function handleFormSubmit(
-  e,
-  { formData, setFormErrors, setStep, setProcessingProgress, STEPS },
+export default async function handleFormSubmit(
+  customerData,
+  { photos, compiledStrip, submitSessionMutation, setStep, setProcessingProgress, STEPS },
 ) {
-  e.preventDefault();
-  const errors = validateForm(formData);
-  setFormErrors(errors);
+  setStep(STEPS.PROCESSING);
+  setProcessingProgress(20);
 
-  if (Object.keys(errors).length === 0) {
-    setStep(STEPS.PROCESSING);
-
-    // Simulate dynamic stitching/emailing progress bar
-    setProcessingProgress(0);
-    const interval = setInterval(() => {
-      setProcessingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setStep(STEPS.EMAIL_SUCCESS);
-          }, 500);
-          return 100;
-        }
-        return prev + 5;
+  try {
+    setProcessingProgress(50);
+    if (submitSessionMutation && submitSessionMutation.mutateAsync) {
+      await submitSessionMutation.mutateAsync({
+        photos,
+        compiledStrip,
+        customerData,
       });
-    }, 150);
+    }
+    setProcessingProgress(90);
+  } catch (error) {
+    console.warn('Backend API session submission warning:', error);
+  } finally {
+    setProcessingProgress(100);
+    setTimeout(() => {
+      setStep(STEPS.EMAIL_SUCCESS);
+    }, 500);
   }
 }

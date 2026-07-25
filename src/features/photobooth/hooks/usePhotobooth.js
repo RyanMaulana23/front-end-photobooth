@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { STEPS, getMaxPhotos } from "../../../constants/photobooth";
+import { STEPS } from "../../../constants/photobooth";
 import { compilePhotoStrip } from "../utils/canvasHelper";
 import useCamera from "../../../hooks/useCamera";
 
@@ -14,9 +14,11 @@ import handlePrintTrigger from "./utils/handlePrintTrigger";
 import handleDownloadStrip from "./utils/handleDownloadStrip";
 import resetAll from "./utils/resetAll";
 import getProgressPercent from "./utils/getProgressPercent";
+import { useSubmitPhotoboothSession } from "./usePhotoboothApi";
 
 export default function usePhotobooth() {
   const navigate = useNavigate();
+  const submitSessionMutation = useSubmitPhotoboothSession();
 
   // ==========================================
   // States
@@ -77,19 +79,12 @@ export default function usePhotobooth() {
   // Attach camera stream to HTML Video element
   useEffect(() => {
     if (videoRef.current && cameraStream) {
-      if (videoRef.current && cameraStream) {
-        videoRef.current.srcObject = cameraStream;
-
-        videoRef.current.setAttribute("playsinline", true);
-
-        videoRef.current.muted = true;
-
-        videoRef.current.autoplay = true;
-
-        videoRef.current.playsInline = true;
-
-        videoRef.current.play().catch(console.warn);
-      }
+      videoRef.current.srcObject = cameraStream;
+      videoRef.current.setAttribute("playsinline", "true");
+      videoRef.current.muted = true;
+      videoRef.current.autoplay = true;
+      videoRef.current.playsInline = true;
+      videoRef.current.play().catch(console.warn);
     }
   }, [cameraStream, step]);
 
@@ -101,11 +96,7 @@ export default function usePhotobooth() {
       }, 1000);
       return () => clearTimeout(timer);
     } else if (countdown === 0) {
-      // Let the final prompt stay visible before the camera takes the photo.
-      const timer = setTimeout(() => {
-        callTakeSnapshot();
-      }, 800);
-      return () => clearTimeout(timer);
+      callTakeSnapshot();
     }
   }, [countdown]);
 
@@ -121,19 +112,16 @@ export default function usePhotobooth() {
 
   // Canvas photo strip compiler
   useEffect(() => {
-    if (step !== STEPS.PREVIEW && step !== STEPS.EDIT_DECISION) return;
-
-    const required = getMaxPhotos(template);
-
-    const ready = photos.filter(Boolean).length === required;
-
-    if (!ready) return;
-
-    compilePhotoStrip(template, photos).then((dataUrl) => {
-      if (dataUrl) {
-        setCompiledStrip(dataUrl);
-      }
-    });
+    if (step === STEPS.PREVIEW || step === STEPS.EDIT_DECISION) {
+      (async () => {
+        try {
+          const dataUrl = await compilePhotoStrip(template, photos);
+          if (dataUrl) setCompiledStrip(dataUrl);
+        } catch (err) {
+          console.error(err);
+        }
+      })();
+    }
   }, [step, photos, template]);
 
   // Exit thank you screen when timer reaches 0
@@ -203,10 +191,11 @@ export default function usePhotobooth() {
       STEPS,
     });
 
-  const callHandleFormSubmit = (e) =>
-    handleFormSubmit(e, {
-      formData,
-      setFormErrors,
+  const callHandleFormSubmit = (customerData) =>
+    handleFormSubmit(customerData, {
+      photos,
+      compiledStrip,
+      submitSessionMutation,
       setStep,
       setProcessingProgress,
       STEPS,
@@ -278,6 +267,7 @@ export default function usePhotobooth() {
     selectedDevice,
     setSelectedDevice,
     hasCamera,
+    submitSessionMutation,
     triggerCaptureSequence: callTriggerCaptureSequence,
     takeSnapshot: callTakeSnapshot,
     handleStartCapture: callHandleStartCapture,
