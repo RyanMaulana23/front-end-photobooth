@@ -2,20 +2,50 @@ import {
   FILTERS,
   LAYOUT_CONFIGS,
   getMaxPhotos,
-} from "../../../../constants/photobooth";
-import { drawMockAvatar } from "../../utils/mockAvatar";
-import { playShutterSound } from "../../../../utils/audio";
+} from '../../../../constants/photobooth';
+import { drawMockAvatar } from '../../utils/mockAvatar';
+import { playShutterSound } from '../../../../utils/audio';
+import { calculateFaceTransform } from '../../utils/ar/calculateFaceTransform';
+import { renderAROverlay } from '../../utils/ar/renderAROverlay';
 
 /**
- * Capture frame from live camera stream or draw mock visual when offline.
+ * Maps face transform from video coordinate space to cover-cropped canvas coordinates.
+ */
+function mapTransformToCanvas(
+  transform,
+  sx,
+  sy,
+  sw,
+  sh,
+  canvasWidth,
+  canvasHeight,
+) {
+  if (!transform) return null;
+  const scale = canvasWidth / sw;
+  return {
+    ...transform,
+    centerX: (transform.centerX - sx) * scale,
+    centerY: (transform.centerY - sy) * scale,
+    foreheadX: (transform.foreheadX - sx) * scale,
+    foreheadY: (transform.foreheadY - sy) * scale,
+    noseX: (transform.noseX - sx) * scale,
+    noseY: (transform.noseY - sy) * scale,
+    faceWidth: transform.faceWidth * scale,
+    faceHeight: transform.faceHeight * scale,
+  };
+}
+
+/**
+ * Capture frame from live camera stream with AR Overlay and Color Filter.
  *
  * @param {object} params - State getters and setters for the snapshot
  */
-
 export default function takeSnapshot({
   flashEnabled,
   setFlash,
   activeFilter,
+  activeARFilter,
+  faceTransformRef,
   template,
   capturingIndex,
   hasCamera,
@@ -41,25 +71,22 @@ export default function takeSnapshot({
     playShutterSound();
   }
 
-  let photoData = "";
+  let photoData = '';
   const config = LAYOUT_CONFIGS[template];
   const slot = config.slots[capturingIndex];
   const filterVal =
-    FILTERS.find((f) => f.id === activeFilter)?.canvasFilter || "none";
+    FILTERS.find((f) => f.id === activeFilter)?.canvasFilter || 'none';
 
   const video = videoRef.current;
   const vWidth = video?.videoWidth ?? 0;
   const vHeight = video?.videoHeight ?? 0;
   const hasVideoFrame = hasCamera && video && vWidth > 0 && vHeight > 0;
 
-  // Capture at the exact slot aspect ratio so the saved photo matches the
-  // camera preview and fills the chosen frame without bars or distortion.
-  const canvas = document.createElement("canvas");
+  const canvas = document.createElement('canvas');
   canvas.width = slot.w;
   canvas.height = slot.h;
 
-  const ctx = canvas.getContext("2d");
-  ctx.filter = filterVal;
+  const ctx = canvas.getContext('2d');
 
   if (hasVideoFrame) {
     const canvasRatio = canvas.width / canvas.height;
@@ -77,19 +104,75 @@ export default function takeSnapshot({
       sy = (vHeight - sh) / 2;
     }
 
+    ctx.save();
+    ctx.filter = filterVal;
     if (mirror) {
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
     }
-
     ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    ctx.restore();
+
+    // 2. Render AR Overlay on top of captured photo with mapped face transform
+    if (activeARFilter && activeARFilter !== 'none') {
+      const originalTransforms = Array.isArray(faceTransformRef?.current)
+        ? faceTransformRef.current
+        : [calculateFaceTransform(null, vWidth, vHeight, performance.now())];
+
+      ctx.save();
+      if (mirror) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+
+      originalTransforms.forEach((origTransform) => {
+        const mappedTransform = mapTransformToCanvas(
+          origTransform,
+          sx,
+          sy,
+          sw,
+          sh,
+          canvas.width,
+          canvas.height,
+        );
+        renderAROverlay(
+          ctx,
+          canvas.width,
+          canvas.height,
+          mappedTransform,
+          activeARFilter,
+          performance.now(),
+          true,
+          mirror,
+        );
+      });
+
+      ctx.restore();
+    }
   } else {
-    // The camera can report as available before its first video frame arrives.
-    // Keep the capture flow valid instead of saving an empty image in that case.
+    ctx.filter = filterVal;
     drawMockAvatar(ctx, slot.w, slot.h, simulatedAvatarSeed, capturingIndex);
+
+    if (activeARFilter && activeARFilter !== 'none') {
+      const transform = calculateFaceTransform(
+        null,
+        slot.w,
+        slot.h,
+        performance.now(),
+      );
+      renderAROverlay(
+        ctx,
+        slot.w,
+        slot.h,
+        transform,
+        activeARFilter,
+        performance.now(),
+        true,
+      );
+    }
   }
 
-  photoData = canvas.toDataURL("image/png");
+  photoData = canvas.toDataURL('image/png');
 
   // 4. Save photo data
   setPhotos((prev) => {

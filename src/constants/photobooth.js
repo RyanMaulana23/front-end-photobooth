@@ -100,6 +100,141 @@ export const LAYOUT_CONFIGS = {
   },
 };
 
+export const getMaxPhotos = (template) => {
+  return LAYOUT_CONFIGS[template]?.slots.length ?? 4;
+};
+
+export const AR_FILTERS = [
+  {
+    id: "none",
+    label: "Tanpa AR",
+    category: "ar",
+    icon: "🚫",
+    description: "Matikan filter wajah AR",
+    previewBg: "#f1f5f9",
+  },
+  {
+    id: "bird",
+    label: "Boothcool Bird",
+    category: "ar",
+    icon: "🐦",
+    description: "Burung biru Boothcool berkedip & mengepak di atas kepala",
+    previewBg: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+  },
+  {
+    id: "hearts",
+    label: "Hearts",
+    category: "ar",
+    icon: "💖",
+    description: "Mahkota hati melayang, pipi merah & kilau bintang",
+    previewBg: "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)",
+  },
+  {
+    id: "dog",
+    label: "Puppy Dog",
+    category: "ar",
+    icon: "🐶",
+    description: "Telinga anjing bergerak, hidung imut & lidah melet saat mulut terbuka",
+    previewBg: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+  },
+  {
+    id: "sakura",
+    label: "Sakura",
+    category: "ar",
+    icon: "🌸",
+    description: "Kelopak bunga sakura berguguran & kilatan cahaya",
+    previewBg: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+  },
+  {
+    id: "glitter",
+    label: "Glitter",
+    category: "ar",
+    icon: "✨",
+    description: "Partikel emas & bintang gemerlap melayang",
+    previewBg: "linear-gradient(135deg, #f5d020 0%, #f5d020 100%)",
+  },
+  {
+    id: "bunny",
+    label: "Bunny",
+    category: "ar",
+    icon: "🐰",
+    description: "Telinga kelinci panjang & hidung kelinci merah muda",
+    previewBg: "linear-gradient(135deg, #e2ebf0 0%, #cfd9df 100%)",
+  },
+  {
+    id: "cat",
+    label: "Cat",
+    category: "ar",
+    icon: "🐱",
+    description: "Telinga kucing lancip, kumis & hidung kucing kecil",
+    previewBg: "linear-gradient(135deg, #fddb92 0%, #d1f2a5 100%)",
+  },
+  {
+    id: "crown",
+    label: "Princess Crown",
+    category: "ar",
+    icon: "👑",
+    description: "Mahkota emas berkilau mengambang di dahi",
+    previewBg: "linear-gradient(135deg, #ffd700 0%, #fbc2eb 100%)",
+  },
+  {
+    id: "sunglasses",
+    label: "Sunglasses",
+    category: "ar",
+    icon: "🕶️",
+    description: "Kacamata hitam keren terpasang di area mata",
+    previewBg: "linear-gradient(135deg, #1e272e 0%, #485460 100%)",
+  },
+  {
+    id: "santa",
+    label: "Santa",
+    category: "ar",
+    icon: "🎅",
+    description: "Topi merah Santa Claus & jenggot putih tebal",
+    previewBg: "linear-gradient(135deg, #ff4757 0%, #ff6b81 100%)",
+  },
+  {
+    id: "halloween",
+    label: "Halloween",
+    category: "ar",
+    icon: "👻",
+    description: "Hantu-hantu kecil terbang mengelilingi kepala",
+    previewBg: "linear-gradient(135deg, #3d3d3d 0%, #1e1e1e 100%)",
+  },
+  {
+    id: "christmas",
+    label: "Christmas",
+    category: "ar",
+    icon: "🎄",
+    description: "Daun holly di dahi & efek salju berguguran",
+    previewBg: "linear-gradient(135deg, #2ed573 0%, #7bed9f 100%)",
+  },
+  {
+    id: "wedding",
+    label: "Wedding",
+    category: "ar",
+    icon: "💍",
+    description: "Tiara bunga & kelopak mawar jatuh berguguran",
+    previewBg: "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)",
+  },
+  {
+    id: "wings",
+    label: "Angel Wings",
+    category: "ar",
+    icon: "🪶",
+    description: "Sayap malaikat putih bersinar di kanan kiri kepala",
+    previewBg: "linear-gradient(135deg, #ffffff 0%, #eef2f3 100%)",
+  },
+  {
+    id: "rainbow",
+    label: "Rainbow",
+    category: "ar",
+    icon: "🌈",
+    description: "Pelangi indah melengkung & taburan confetti warna-warni",
+    previewBg: "linear-gradient(135deg, #ff7675 0%, #ffeaa7 100%)",
+  },
+];
+
 export const FILTERS = [
   {
     id: "vintage",
@@ -221,11 +356,6 @@ export const FILTERS = [
     previewType: "image",
   },
 ];
-
-export const getMaxPhotos = (template) => {
-  return LAYOUT_CONFIGS[template]?.slots.length ?? 4;
-};
-
 export const getCameraAspectStyle = (template) => {
 
     const config = LAYOUT_CONFIGS?.[template];
@@ -246,15 +376,12 @@ export const getCameraAspectStyle = (template) => {
 };
 
 export const getSlotAspectClass = (template) => {
+  const config = LAYOUT_CONFIGS?.[template];
 
-    const config = LAYOUT_CONFIGS?.[template];
+  if (!config || !config.slots?.length) {
+    return "w-full aspect-[3/4] object-cover";
+  }
 
-    if (!config || !config.slots?.length) {
-
-        return "w-full h-auto max-h-80 object-cover";
-
-    }
-
-    return "w-full h-auto max-h-80 object-cover";
-
+  const slot = config.slots[0];
+  return `w-full aspect-[${slot.w}/${slot.h}] object-cover`;
 };

@@ -36,6 +36,8 @@ export default function Photobooth() {
     setFlashEnabled,
     activeFilter,
     setActiveFilter,
+    activeARFilter,
+    setActiveARFilter,
     isFilterModalOpen,
     setIsFilterModalOpen,
     countdownTime,
@@ -53,6 +55,7 @@ export default function Photobooth() {
     selectedDevice,
     setSelectedDevice,
     hasCamera,
+    faceTransformRef,
     submitSessionMutation,
     triggerCaptureSequence,
     handleStartCapture,
@@ -115,6 +118,9 @@ export default function Photobooth() {
           setFlashEnabled={setFlashEnabled}
           activeFilter={activeFilter}
           setActiveFilter={setActiveFilter}
+          activeARFilter={activeARFilter}
+          setActiveARFilter={setActiveARFilter}
+          faceTransformRef={faceTransformRef}
           isFilterModalOpen={isFilterModalOpen}
           setIsFilterModalOpen={setIsFilterModalOpen}
           hasCamera={hasCamera}

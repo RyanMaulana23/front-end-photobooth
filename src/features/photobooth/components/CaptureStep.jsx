@@ -1,5 +1,6 @@
-import { FILTERS } from '../../../constants/photobooth';
+import { FILTERS, AR_FILTERS } from '../../../constants/photobooth';
 import FilterModal from './FilterModal';
+import FaceFilterCanvas from './ar/FaceFilterCanvas';
 
 export default function CaptureStep({
   photos,
@@ -18,6 +19,9 @@ export default function CaptureStep({
   setFlashEnabled,
   activeFilter,
   setActiveFilter,
+  activeARFilter,
+  setActiveARFilter,
+  faceTransformRef,
   isFilterModalOpen,
   setIsFilterModalOpen,
   hasCamera,
@@ -43,8 +47,7 @@ export default function CaptureStep({
           : `Sesi Foto #${capturingIndex + 1}`}
       </h2>
       <p className="text-xs text-[#7a7266] mb-4">
-        Posisikan dirimu di depan kamera. Klik **START** untuk memulai
-        hitung mundur!
+        Posisikan dirimu di depan kamera. Klik **START** untuk memulai hitung mundur!
       </p>
 
       {/* Top Controls Row */}
@@ -94,6 +97,14 @@ export default function CaptureStep({
           }}
         />
 
+        {/* Real-time AR Face Filter Overlay */}
+        <FaceFilterCanvas
+          activeARFilter={activeARFilter}
+          videoRef={videoRef}
+          faceTransformRef={faceTransformRef}
+          mirror={mirror}
+        />
+
         {/* Simulated Camera View */}
         {!hasCamera && (
           <div
@@ -111,9 +122,8 @@ export default function CaptureStep({
               </div>
             </div>
 
-            <div className="absolute top-4 left-4 bg-red-600 px-3 py-1 text-xs rounded-full font-mono font-bold tracking-widest animate-pulse flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-white" /> REC
-              (SIMULATOR)
+            <div className="absolute top-4 left-4 bg-red-600 px-3 py-1 text-xs rounded-full font-mono font-bold tracking-widest animate-pulse flex items-center gap-1.5 z-20">
+              <div className="w-2 h-2 rounded-full bg-white" /> REC (SIMULATOR)
             </div>
 
             <p className="mt-5 text-sm text-[#c9c1b4] font-medium tracking-wide">
@@ -124,7 +134,7 @@ export default function CaptureStep({
 
         {/* Countdown Overlay */}
         {countdown >= 0 && (
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center animate-fade-in">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center animate-fade-in z-20">
             <div
               className={`text-white text-8xl md:text-9xl font-bold font-display animate-ping [animation-duration:1s] ${
                 countdown === 0 ? 'hidden' : ''
@@ -142,7 +152,7 @@ export default function CaptureStep({
 
         {/* Camera flash overlay */}
         {flash && (
-          <div className="absolute inset-0 bg-white transition-opacity duration-75 opacity-100" />
+          <div className="absolute inset-0 bg-white transition-opacity duration-75 opacity-100 z-30" />
         )}
       </div>
 
@@ -194,10 +204,17 @@ export default function CaptureStep({
             <span className="text-[10px] font-bold text-[#8a7f71] uppercase tracking-wider block">
               Filter Aktif
             </span>
-            <span className="text-sm font-extrabold text-maroon font-display">
-              {FILTERS.find((f) => f.id === activeFilter)?.label ||
-                'Normal'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-extrabold text-maroon font-display">
+                {FILTERS.find((f) => f.id === activeFilter)?.label || 'Normal'}
+              </span>
+              {activeARFilter && activeARFilter !== 'none' && (
+                <span className="text-xs bg-pink-500 text-white font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
+                  {AR_FILTERS.find((a) => a.id === activeARFilter)?.icon}{' '}
+                  {AR_FILTERS.find((a) => a.id === activeARFilter)?.label}
+                </span>
+              )}
+            </div>
           </div>
           <button
             onClick={() => setIsFilterModalOpen(true)}
@@ -255,6 +272,8 @@ export default function CaptureStep({
         <FilterModal
           activeFilter={activeFilter}
           setActiveFilter={setActiveFilter}
+          activeARFilter={activeARFilter}
+          setActiveARFilter={setActiveARFilter}
           setIsFilterModalOpen={setIsFilterModalOpen}
         />
       )}

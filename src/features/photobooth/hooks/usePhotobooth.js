@@ -15,6 +15,7 @@ import handleDownloadStrip from "./utils/handleDownloadStrip";
 import resetAll from "./utils/resetAll";
 import getProgressPercent from "./utils/getProgressPercent";
 import { useSubmitPhotoboothSession } from "./usePhotoboothApi";
+import { useFaceTracking } from "./useFaceTracking";
 
 export default function usePhotobooth() {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ export default function usePhotobooth() {
   const [mirror, setMirror] = useState(true);
   const [flashEnabled, setFlashEnabled] = useState(true);
   const [activeFilter, setActiveFilter] = useState("none");
+  const [activeARFilter, setActiveARFilter] = useState("none");
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [countdownTime, setCountdownTime] = useState(3);
 
@@ -71,6 +73,9 @@ export default function usePhotobooth() {
     cameraStream,
     hasCamera,
   } = useCamera(step, STEPS);
+
+  // Real-time face tracking model hook
+  const { faceTransformRef } = useFaceTracking(videoRef, step === STEPS.PHOTO_CAPTURE);
 
   // ==========================================
   // Side Effects
@@ -154,6 +159,8 @@ export default function usePhotobooth() {
       flashEnabled,
       setFlash,
       activeFilter,
+      activeARFilter,
+      faceTransformRef,
       template,
       capturingIndex,
       hasCamera,
@@ -250,6 +257,8 @@ export default function usePhotobooth() {
     setFlashEnabled,
     activeFilter,
     setActiveFilter,
+    activeARFilter,
+    setActiveARFilter,
     isFilterModalOpen,
     setIsFilterModalOpen,
     countdownTime,
@@ -267,6 +276,7 @@ export default function usePhotobooth() {
     selectedDevice,
     setSelectedDevice,
     hasCamera,
+    faceTransformRef,
     submitSessionMutation,
     triggerCaptureSequence: callTriggerCaptureSequence,
     takeSnapshot: callTakeSnapshot,
