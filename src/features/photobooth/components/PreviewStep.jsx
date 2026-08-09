@@ -3,6 +3,7 @@ export default function PreviewStep({
   template,
   getMaxPhotos,
   getSlotAspectClass,
+  getSlotAspectStyle,
   handleRetakeSelect,
   setStep,
   STEPS,
@@ -28,18 +29,23 @@ export default function PreviewStep({
         }`}
       >
         {photos.slice(0, max).map((src, idx) => (
-          <div key={idx} className="flex flex-col items-center gap-3">
-            <div className="relative group overflow-hidden rounded-2xl border-4 border-white shadow-md hover:shadow-lg transition-all">
+          <div key={idx} className="flex flex-col items-center gap-3 w-full">
+            <div
+              className="relative group overflow-hidden rounded-2xl border-4 border-white shadow-md hover:shadow-lg transition-all w-full"
+              style={
+                getSlotAspectStyle
+                  ? getSlotAspectStyle(template)
+                  : { aspectRatio: '4 / 3' }
+              }
+            >
               {src ? (
                 <img
                   src={src}
                   alt={`captured ${idx}`}
-                  className={getSlotAspectClass(template)}
+                  className="w-full h-full object-cover"
                 />
               ) : (
-                <div
-                  className={`bg-slate-200 flex items-center justify-center text-slate-400 font-semibold ${getSlotAspectClass(template)}`}
-                >
+                <div className="bg-slate-200 flex items-center justify-center text-slate-400 font-semibold w-full h-full">
                   Empty
                 </div>
               )}

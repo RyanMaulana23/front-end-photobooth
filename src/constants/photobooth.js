@@ -376,12 +376,14 @@ export const getCameraAspectStyle = (template) => {
 };
 
 export const getSlotAspectClass = (template) => {
+  return "w-full h-full object-cover";
+};
+
+export const getSlotAspectStyle = (template) => {
   const config = LAYOUT_CONFIGS?.[template];
-
   if (!config || !config.slots?.length) {
-    return "w-full aspect-[3/4] object-cover";
+    return { aspectRatio: "4 / 3" };
   }
-
   const slot = config.slots[0];
-  return `w-full aspect-[${slot.w}/${slot.h}] object-cover`;
+  return { aspectRatio: `${slot.w} / ${slot.h}` };
 };

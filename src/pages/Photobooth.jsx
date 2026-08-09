@@ -4,6 +4,7 @@ import {
   getCameraAspectStyle,
   getMaxPhotos,
   getSlotAspectClass,
+  getSlotAspectStyle,
 } from '../constants/photobooth';
 import usePhotobooth from '../features/photobooth/hooks/usePhotobooth';
 
@@ -140,6 +141,7 @@ export default function Photobooth() {
           template={template}
           getMaxPhotos={getMaxPhotos}
           getSlotAspectClass={getSlotAspectClass}
+          getSlotAspectStyle={getSlotAspectStyle}
           handleRetakeSelect={handleRetakeSelect}
           setStep={setStep}
           STEPS={STEPS}
