@@ -5,9 +5,11 @@ export default function TemplateStep({
   setTemplate,
   getMaxPhotos,
   handleStartCapture,
+  isCreatingSession,
+  sessionStartError,
 }) {
   return (
-    <div className="w-full max-w-5xl text-center flex flex-col items-center animate-fade-in">
+    <div className="w-full max-w-5xl pt-4 md:pt-6 text-center flex flex-col items-center animate-fade-in">
       <h2 className="text-3xl md:text-4xl font-bold text-maroon mb-2 font-display">
         Pilih Templatemu ✨
       </h2>
@@ -17,7 +19,7 @@ export default function TemplateStep({
       </p>
 
       {/* Scrollable layout cards container */}
-      <div className="flex gap-6 overflow-x-auto w-full max-w-5xl pb-6 px-6 md:px-8 scroll-smooth justify-start select-none mb-10">
+      <div className="flex w-full max-w-5xl gap-6 mt-5 mb-10 overflow-x-auto px-6 pt-5 pb-6 md:mt-6 md:px-8 md:pt-6 scroll-smooth justify-start select-none">
         {Object.keys(LAYOUT_CONFIGS).map((key) => {
           const config = LAYOUT_CONFIGS[key];
           const isSelected = template === key;
@@ -26,7 +28,7 @@ export default function TemplateStep({
           return (
             <div
               key={key}
-              onClick={() => setTemplate(key)}
+              onClick={() => !isCreatingSession && setTemplate(key)}
               className={`w-[260px] shrink-0 cursor-pointer rounded-3xl border-3 p-5 flex flex-col items-center justify-between transition-all transform hover:scale-[1.03] ${
                 isSelected
                   ? 'border-[#f43f5e] bg-pink-50/50 shadow-lg scale-[1.02]'
@@ -68,11 +70,18 @@ export default function TemplateStep({
         })}
       </div>
 
+      {sessionStartError && (
+        <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+          {sessionStartError}
+        </p>
+      )}
+
       <button
         onClick={handleStartCapture}
-        className="rounded-pill bg-terracotta hover:bg-terracotta-dark px-12 py-4.5 text-lg font-bold tracking-wide text-white shadow-start transition-all"
+        disabled={isCreatingSession}
+        className="rounded-pill bg-terracotta hover:bg-terracotta-dark px-12 py-4.5 text-lg font-bold tracking-wide text-white shadow-start transition-all disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Mulai Sesi Foto 🚀
+        {isCreatingSession ? 'Membuat Sesi Foto...' : 'Mulai Sesi Foto 🚀'}
       </button>
     </div>
   );

@@ -7,6 +7,7 @@ export default function InputDataStep({
   setFormData,
   handleFormSubmit,
   isSubmitting,
+  submissionError,
 }) {
   const {
     register,
@@ -24,7 +25,9 @@ export default function InputDataStep({
     },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    if (isSubmitting) return;
+
     // Keep local formData in sync for download file names & legacy fallbacks
     setFormData({
       nama: data.name,
@@ -35,7 +38,7 @@ export default function InputDataStep({
       ig: data.instagramUsername ? `@${data.instagramUsername}` : '',
     });
 
-    handleFormSubmit(data);
+    await handleFormSubmit(data);
   };
 
   return (
@@ -56,6 +59,11 @@ export default function InputDataStep({
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white rounded-3xl border border-line p-6 md:p-8 shadow-sm flex flex-col gap-4"
       >
+        {submissionError && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            {submissionError}
+          </div>
+        )}
         {/* Nama Field */}
         <div>
           <label
@@ -68,6 +76,7 @@ export default function InputDataStep({
             id="name"
             type="text"
             {...register('name')}
+            disabled={isSubmitting}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
               errors.name
                 ? 'border-red-500 focus:border-red-500'
@@ -94,6 +103,7 @@ export default function InputDataStep({
             id="npm"
             type="text"
             {...register('npm')}
+            disabled={isSubmitting}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
               errors.npm
                 ? 'border-red-500 focus:border-red-500'
@@ -120,6 +130,7 @@ export default function InputDataStep({
             id="email"
             type="email"
             {...register('email')}
+            disabled={isSubmitting}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
               errors.email
                 ? 'border-red-500 focus:border-red-500'
@@ -146,6 +157,7 @@ export default function InputDataStep({
             id="phoneNumber"
             type="text"
             {...register('phoneNumber')}
+            disabled={isSubmitting}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
               errors.phoneNumber
                 ? 'border-red-500 focus:border-red-500'
@@ -172,6 +184,7 @@ export default function InputDataStep({
             id="major"
             type="text"
             {...register('major')}
+            disabled={isSubmitting}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
               errors.major
                 ? 'border-red-500 focus:border-red-500'
@@ -198,6 +211,7 @@ export default function InputDataStep({
             id="instagramUsername"
             type="text"
             {...register('instagramUsername')}
+            disabled={isSubmitting}
             className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none transition-colors ${
               errors.instagramUsername
                 ? 'border-red-500 focus:border-red-500'

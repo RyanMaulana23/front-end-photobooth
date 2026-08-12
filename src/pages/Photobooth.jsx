@@ -46,7 +46,8 @@ export default function Photobooth() {
     formData,
     setFormData,
     formErrors,
-    processingProgress,
+    submissionState,
+    submissionError,
     printingProgress,
     thankYouCountdown,
     simulatedAvatarSeed,
@@ -57,7 +58,9 @@ export default function Photobooth() {
     setSelectedDevice,
     hasCamera,
     faceTransformRef,
-    submitSessionMutation,
+    isCreatingSession,
+    sessionStartError,
+    isSubmitting,
     triggerCaptureSequence,
     handleStartCapture,
     handleRetakeSelect,
@@ -97,6 +100,8 @@ export default function Photobooth() {
           setTemplate={setTemplate}
           getMaxPhotos={getMaxPhotos}
           handleStartCapture={handleStartCapture}
+          isCreatingSession={isCreatingSession}
+          sessionStartError={sessionStartError}
         />
       )}
 
@@ -166,13 +171,14 @@ export default function Photobooth() {
           setFormData={setFormData}
           formErrors={formErrors}
           handleFormSubmit={handleFormSubmit}
-          isSubmitting={submitSessionMutation?.isPending}
+          isSubmitting={isSubmitting}
+          submissionError={submissionError}
         />
       )}
 
       {/* Step 6: Processing & Stitching Simulation */}
       {step === STEPS.PROCESSING && (
-        <ProcessingStep processingProgress={processingProgress} />
+        <ProcessingStep submissionState={submissionState} />
       )}
 
       {/* Step 7: Email Sent & Action Success */}

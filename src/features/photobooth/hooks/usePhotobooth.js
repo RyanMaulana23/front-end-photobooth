@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { STEPS } from "../../../constants/photobooth";
 import { compilePhotoStrip } from "../utils/canvasHelper";
 import useCamera from "../../../hooks/useCamera";
@@ -14,18 +14,26 @@ import handlePrintTrigger from "./utils/handlePrintTrigger";
 import handleDownloadStrip from "./utils/handleDownloadStrip";
 import resetAll from "./utils/resetAll";
 import getProgressPercent from "./utils/getProgressPercent";
-import { useSubmitPhotoboothSession } from "./usePhotoboothApi";
+import {
+  useCreatePhotoSession,
+  useSubmitPhotoboothSession,
+} from "./usePhotoboothApi";
 import { useFaceTracking } from "./useFaceTracking";
 
 export default function usePhotobooth() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { sessionId } = useParams();
+  const createSessionMutation = useCreatePhotoSession();
   const submitSessionMutation = useSubmitPhotoboothSession();
 
   // ==========================================
   // States
   // ==========================================
   const [step, setStep] = useState(STEPS.TEMPLATE);
-  const [template, setTemplate] = useState("layout1");
+  const [template, setTemplate] = useState(
+    () => location.state?.template || "layout1",
+  );
   const [compiledStrip, setCompiledStrip] = useState(null);
   const [photos, setPhotos] = useState([null, null, null, null]);
   const [capturingIndex, setCapturingIndex] = useState(0);
@@ -52,8 +60,14 @@ export default function usePhotobooth() {
   });
   const [formErrors, setFormErrors] = useState({});
 
-  // Simulation Progress
-  const [processingProgress, setProcessingProgress] = useState(0);
+  const [submissionState, setSubmissionState] = useState({
+    status: 'idle',
+    step: 0,
+    progress: 0,
+    message: '',
+    error: null,
+  });
+  const [sessionStartError, setSessionStartError] = useState(null);
   const [printingProgress, setPrintingProgress] = useState(0);
   const [thankYouCountdown, setThankYouCountdown] = useState(10);
   const [simulatedAvatarSeed, setSimulatedAvatarSeed] = useState(1);
@@ -64,6 +78,12 @@ export default function usePhotobooth() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const nextPhotoTimeoutRef = useRef(null);
+  const isSubmittingRef = useRef(false);
+  const isCreatingSessionRef = useRef(false);
+  const startedCaptureSessionRef = useRef(null);
+  const previewCompileQueueRef = useRef(Promise.resolve(null));
+  const previewRequestRef = useRef(0);
+  const previewSourceRef = useRef(null);
 
   // Camera stream custom hook integration
   const {
@@ -80,6 +100,21 @@ export default function usePhotobooth() {
   // ==========================================
   // Side Effects
   // ==========================================
+
+  useEffect(() => {
+    if (!sessionId || startedCaptureSessionRef.current === sessionId) return;
+
+    startedCaptureSessionRef.current = sessionId;
+    handleStartCapture({
+      template,
+      setPhotos,
+      setRetakeTarget,
+      setCapturingIndex,
+      setStep,
+      setCountdown,
+      STEPS,
+    });
+  }, [sessionId, template]);
 
   // Attach camera stream to HTML Video element
   useEffect(() => {
@@ -116,18 +151,40 @@ export default function usePhotobooth() {
   }, [step, hasCamera]);
 
   // Canvas photo strip compiler
+  const shouldCompilePreview =
+    step === STEPS.PREVIEW || step === STEPS.EDIT_DECISION;
+
   useEffect(() => {
-    if (step === STEPS.PREVIEW || step === STEPS.EDIT_DECISION) {
-      (async () => {
+    if (shouldCompilePreview) {
+      const previewSource = { template, photos };
+      if (
+        previewSourceRef.current?.template === template &&
+        previewSourceRef.current?.photos === photos
+      ) {
+        return;
+      }
+
+      previewSourceRef.current = previewSource;
+      const requestId = ++previewRequestRef.current;
+      setCompiledStrip(null);
+      const compilePreview = async () => {
         try {
           const dataUrl = await compilePhotoStrip(template, photos);
-          if (dataUrl) setCompiledStrip(dataUrl);
+          if (requestId === previewRequestRef.current && dataUrl) {
+            setCompiledStrip(dataUrl);
+          }
+          return dataUrl;
         } catch (err) {
           console.error(err);
+          return null;
         }
-      })();
+      };
+
+      previewCompileQueueRef.current = previewCompileQueueRef.current
+        .catch(() => undefined)
+        .then(compilePreview);
     }
-  }, [step, photos, template]);
+  }, [photos, shouldCompilePreview, template]);
 
   // Exit thank you screen when timer reaches 0
   useEffect(() => {
@@ -178,16 +235,29 @@ export default function usePhotobooth() {
       STEPS,
     });
 
-  const callHandleStartCapture = () =>
-    handleStartCapture({
-      template,
-      setPhotos,
-      setRetakeTarget,
-      setCapturingIndex,
-      setStep,
-      setCountdown,
-      STEPS,
-    });
+  const callHandleStartCapture = async () => {
+    if (isCreatingSessionRef.current) return;
+
+    isCreatingSessionRef.current = true;
+    setSessionStartError(null);
+
+    try {
+      const session = await createSessionMutation.mutateAsync();
+      if (!session?.id) {
+        throw new Error('Server tidak mengembalikan ID sesi foto.');
+      }
+
+      navigate(`/photobooth/${session.id}`, { state: { template } });
+    } catch (error) {
+      setSessionStartError(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Gagal memulai sesi foto. Silakan coba lagi.',
+      );
+    } finally {
+      isCreatingSessionRef.current = false;
+    }
+  };
 
   const callHandleRetakeSelect = (index) =>
     handleRetakeSelect(index, {
@@ -202,9 +272,11 @@ export default function usePhotobooth() {
     handleFormSubmit(customerData, {
       photos,
       compiledStrip,
+      sessionId,
       submitSessionMutation,
+      isSubmittingRef,
+      setSubmissionState,
       setStep,
-      setProcessingProgress,
       STEPS,
     });
 
@@ -243,6 +315,7 @@ export default function usePhotobooth() {
   return {
     step,
     setStep,
+    sessionId,
     template,
     setTemplate,
     compiledStrip,
@@ -266,7 +339,7 @@ export default function usePhotobooth() {
     formData,
     setFormData,
     formErrors,
-    processingProgress,
+    submissionState,
     printingProgress,
     thankYouCountdown,
     simulatedAvatarSeed,
@@ -277,7 +350,10 @@ export default function usePhotobooth() {
     setSelectedDevice,
     hasCamera,
     faceTransformRef,
-    submitSessionMutation,
+    isCreatingSession: createSessionMutation.isPending,
+    sessionStartError,
+    isSubmitting: submissionState.status === 'processing' || submitSessionMutation.isPending,
+    submissionError: submissionState.error,
     triggerCaptureSequence: callTriggerCaptureSequence,
     takeSnapshot: callTakeSnapshot,
     handleStartCapture: callHandleStartCapture,

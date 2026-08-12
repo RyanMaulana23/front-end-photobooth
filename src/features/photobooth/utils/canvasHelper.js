@@ -197,7 +197,7 @@ export const compilePhotoStrip = (template, photos) => {
       tempCtx.putImageData(imgData, 0, 0);
 
       // 2. Fill every slot edge-to-edge with the user's captured photo.
-      const promises = photos.map((src, idx) => {
+      const drawPhoto = (src, idx) => {
         if (!src || !config.slots[idx]) return Promise.resolve();
         const slot = config.slots[idx];
         return new Promise((res) => {
@@ -235,13 +235,18 @@ export const compilePhotoStrip = (template, photos) => {
           photoImg.onerror = res;
           photoImg.src = src;
         });
-      });
+      };
 
-      Promise.all(promises).then(() => {
-        // 3. Draw processed frame on top
+      const drawPhotosSequentially = async () => {
+        for (let index = 0; index < photos.length; index += 1) {
+          await drawPhoto(photos[index], index);
+        }
+
         ctx.drawImage(tempCanvas, 0, 0);
         resolve(canvas.toDataURL("image/png"));
-      });
+      };
+
+      drawPhotosSequentially();
     };
     frameImg.onerror = () => resolve(null);
     frameImg.src = config.image;

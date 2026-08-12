@@ -22,4 +22,21 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+// Handle response errors (e.g. 401 Unauthorized token expiry)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('admin_access_token');
+      if (
+        window.location.pathname.startsWith('/admin') &&
+        !window.location.pathname.includes('/login')
+      ) {
+        window.location.href = '/auth/login';
+      }
+    }
+    return Promise.reject(error);
+  },
+);
+
 export default api;

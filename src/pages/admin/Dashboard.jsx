@@ -9,12 +9,16 @@ import {
   useAdminSessions,
   useAdminCustomers,
   useAdminLogout,
+  useAdminRealtimeSubscription,
 } from '../../features/admin/hooks/useAdminData';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('sessions'); // 'sessions' | 'customers'
   const [customerSearchEmail, setCustomerSearchEmail] = useState('');
+
+  // Native Supabase Realtime WebSocket Listener (<1 second instant updates)
+  useAdminRealtimeSubscription();
 
   // Check auth token
   const token = localStorage.getItem('admin_access_token');
@@ -171,6 +175,7 @@ export default function AdminDashboard() {
               {activeTab === 'sessions' && (
                 <SessionList
                   sessions={sessions}
+                  customers={customers}
                   isLoading={isSessionsLoading}
                 />
               )}

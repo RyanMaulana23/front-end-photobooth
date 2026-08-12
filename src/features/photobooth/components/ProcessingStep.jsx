@@ -1,4 +1,6 @@
-export default function ProcessingStep({ processingProgress }) {
+export default function ProcessingStep({ submissionState }) {
+  const { step, progress, message } = submissionState;
+
   return (
     <div className="w-full max-w-md text-center flex flex-col items-center justify-center animate-fade-in py-16">
       <div className="w-24 h-24 relative mb-8">
@@ -12,18 +14,17 @@ export default function ProcessingStep({ processingProgress }) {
         Sedang Memproses Foto...
       </h2>
       <p className="text-sm text-[#7a7266] mb-6 max-w-xs">
-        Menyatukan potret, mengompres folder menjadi ZIP, dan menyambungkan ke
-        server email.
+        {message || 'Menyiapkan pengiriman foto.'}
       </p>
 
       <div className="w-full bg-line h-4 rounded-full overflow-hidden">
         <div
           className="h-full bg-terracotta transition-all duration-150 rounded-full"
-          style={{ width: `${processingProgress}%` }}
+          style={{ width: `${progress}%` }}
         />
       </div>
       <span className="text-xs font-semibold text-[#8a7f71] mt-2">
-        Progress: {processingProgress}%
+        Langkah {step} dari 6 — {progress}%
       </span>
     </div>
   );

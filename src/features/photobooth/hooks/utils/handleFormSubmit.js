@@ -1,33 +1,66 @@
 /**
- * Handles form submission: triggers TanStack Query backend API submission mutation
- * and progresses the UI state smoothly to PROCESSING then EMAIL_SUCCESS.
+ * Orchestrates the complete submission queue from one async flow.
  *
  * @param {object} customerData - Validated customer data from React Hook Form
  * @param {object} controls - Control methods, photos, and mutation hooks
  */
 export default async function handleFormSubmit(
   customerData,
-  { photos, compiledStrip, submitSessionMutation, setStep, setProcessingProgress, STEPS },
+  {
+    photos,
+    compiledStrip,
+    sessionId,
+    submitSessionMutation,
+    isSubmittingRef,
+    setSubmissionState,
+    setStep,
+    STEPS,
+  },
 ) {
+  if (isSubmittingRef.current) return;
+
+  isSubmittingRef.current = true;
   setStep(STEPS.PROCESSING);
-  setProcessingProgress(20);
+  setSubmissionState({
+    status: 'processing',
+    step: 1,
+    progress: 10,
+    message: 'Memvalidasi data pengiriman',
+    error: null,
+  });
 
   try {
-    setProcessingProgress(50);
-    if (submitSessionMutation && submitSessionMutation.mutateAsync) {
-      await submitSessionMutation.mutateAsync({
-        photos,
-        compiledStrip,
-        customerData,
-      });
+    if (!submitSessionMutation?.mutateAsync) {
+      throw new Error('Layanan pengiriman belum tersedia.');
     }
-    setProcessingProgress(90);
+
+    await submitSessionMutation.mutateAsync({
+      sessionId,
+      photos,
+      compiledStrip,
+      customerData,
+      onStageChange: (nextStage) => {
+        setSubmissionState((currentState) => ({
+          ...currentState,
+          ...nextStage,
+          progress: Math.max(currentState.progress, nextStage.progress),
+          error: null,
+        }));
+      },
+    });
+
+    setStep(STEPS.EMAIL_SUCCESS);
   } catch (error) {
-    console.warn('Backend API session submission warning:', error);
+    const message = error?.response?.data?.message || error?.message || 'Pengiriman gagal. Silakan coba lagi.';
+
+    setSubmissionState((currentState) => ({
+      ...currentState,
+      status: 'error',
+      error: message,
+    }));
+    setStep(STEPS.INPUT_DATA);
+    return false;
   } finally {
-    setProcessingProgress(100);
-    setTimeout(() => {
-      setStep(STEPS.EMAIL_SUCCESS);
-    }, 500);
+    isSubmittingRef.current = false;
   }
 }

@@ -15,6 +15,7 @@ export default function AllRoutes() {
         <Route path="/" element={<App />}>
           <Route index element={<Home />} />
           <Route path="photobooth" element={<Photobooth />} />
+          <Route path="photobooth/:sessionId" element={<Photobooth />} />
           <Route path="about" element={<About />} />
           <Route path="gallery" element={<Gallery />} />
         </Route>
@@ -26,6 +27,8 @@ export default function AllRoutes() {
 
         <Route path="admin" element={<AdminDashboard />} />
         <Route path="admin/dashboard" element={<AdminDashboard />} />
+        <Route path="admin/login" element={<Login />} />
+        <Route path="admin/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

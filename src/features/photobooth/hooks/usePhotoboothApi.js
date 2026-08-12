@@ -17,6 +17,48 @@ export function dataURLtoFile(dataurl, filename) {
   return new File([u8arr], filename, { type: mime });
 }
 
+const submissionStages = {
+  validating: {
+    step: 1,
+    progress: 10,
+    message: 'Memvalidasi data pengiriman',
+  },
+  uploadingPhotos: {
+    step: 2,
+    progress: 45,
+    message: 'Mengunggah foto ke server',
+  },
+  creatingZip: {
+    step: 3,
+    progress: 65,
+    message: 'Folder ZIP berhasil dibuat',
+  },
+  uploadingZip: {
+    step: 4,
+    progress: 80,
+    message: 'Folder ZIP berhasil diunggah',
+  },
+  sendingEmail: {
+    step: 5,
+    progress: 90,
+    message: 'Mengirim email',
+  },
+  complete: {
+    status: 'success',
+    step: 6,
+    progress: 100,
+    message: 'Pengiriman selesai',
+  },
+};
+
+function updateStage(onStageChange, stageName, details = {}) {
+  onStageChange?.({
+    stage: stageName,
+    ...submissionStages[stageName],
+    ...details,
+  });
+}
+
 /**
  * Mutation to create a new photo session
  */
@@ -33,6 +75,8 @@ export function useCreatePhotoSession() {
  * Mutation to upload photos to a photo session
  */
 export function useUploadPhotos() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({ sessionId, files }) => {
       const formData = new FormData();
@@ -49,6 +93,12 @@ export function useUploadPhotos() {
       });
       return response.data?.data;
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'customers'] });
+      queryClient.invalidateQueries({ queryKey: ['sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['photos'] });
+    },
   });
 }
 
@@ -64,6 +114,8 @@ export function useCreateCustomer() {
       return response.data?.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'customers'] });
       queryClient.invalidateQueries({ queryKey: ['sessions'] });
       queryClient.invalidateQueries({ queryKey: ['customers'] });
     },
@@ -74,44 +126,71 @@ export function useCreateCustomer() {
  * Combined end-to-end photobooth submission flow mutation
  */
 export function useSubmitPhotoboothSession() {
-  const createSession = useCreatePhotoSession();
   const uploadPhotos = useUploadPhotos();
   const createCustomer = useCreateCustomer();
 
   return useMutation({
-    mutationFn: async ({ photos, compiledStrip, customerData }) => {
-      // 1. Create Photo Session
-      const session = await createSession.mutateAsync();
-      const sessionId = session.id;
+    mutationFn: async ({
+      sessionId,
+      photos,
+      compiledStrip,
+      customerData,
+      onStageChange,
+    }) => {
+      if (!sessionId) {
+        throw new Error('ID sesi foto tidak ditemukan. Silakan mulai sesi baru.');
+      }
 
-      // 2. Prepare photo files for upload (individual frames + compiled strip)
+      updateStage(onStageChange, 'validating');
+
       const fileObjects = [];
-      photos.forEach((photoDataUrl, index) => {
+      const photoDataUrls = photos.filter(Boolean);
+      for (let index = 0; index < photoDataUrls.length; index += 1) {
+        const photoDataUrl = photoDataUrls[index];
+        updateStage(onStageChange, 'uploadingPhotos', {
+          progress: 20 + Math.round(((index + 1) / photoDataUrls.length) * 20),
+          message: `Memproses foto ${index + 1} dari ${photoDataUrls.length}`,
+        });
+
         if (photoDataUrl) {
           const file = dataURLtoFile(photoDataUrl, `photo-${index + 1}.png`);
           if (file) fileObjects.push(file);
         }
-      });
+      }
 
       if (compiledStrip) {
         const stripFile = dataURLtoFile(compiledStrip, `strip-${sessionId}.png`);
         if (stripFile) fileObjects.push(stripFile);
       }
 
-      // 3. Upload Photos to Supabase Storage (saves in original/ and archives in archive/)
+      const uploadedPhotoCount = photoDataUrls.length;
+      updateStage(onStageChange, 'uploadingPhotos', {
+        message: `Mengunggah ${uploadedPhotoCount} foto dan menunggu ZIP selesai`,
+      });
+      console.info('[PHOTO] Start:', `${uploadedPhotoCount} foto`);
       const uploadResult = await uploadPhotos.mutateAsync({
         sessionId,
         files: fileObjects,
       });
+      console.info('[PHOTO] Complete:', `${uploadedPhotoCount} foto`);
 
-      // 4. Save Customer Data linked by sessionId
+      updateStage(onStageChange, 'creatingZip');
+      console.info('[ZIP] Complete');
+
+      updateStage(onStageChange, 'uploadingZip');
+      console.info('[ZIP UPLOAD] Complete');
+
+      updateStage(onStageChange, 'sendingEmail');
+      console.info('[EMAIL] Start');
       const customerResult = await createCustomer.mutateAsync({
         sessionId,
         customerData,
       });
+      console.info('[EMAIL] Complete');
+
+      updateStage(onStageChange, 'complete');
 
       return {
-        session,
         sessionId,
         uploadResult,
         customerResult,

@@ -58,7 +58,8 @@ export default function EditDecisionStep({
 
           <button
             onClick={() => setStep(STEPS.INPUT_DATA)}
-            className="rounded-2xl border-2 border-line bg-white hover:border-[#a79c8c] p-5 text-left transition-all cursor-pointer transform hover:scale-[1.01]"
+            disabled={!compiledStrip}
+            className="rounded-2xl border-2 border-line bg-white hover:border-[#a79c8c] p-5 text-left transition-all cursor-pointer transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-line disabled:hover:scale-100"
           >
             <div className="font-bold text-maroon text-lg flex items-center gap-2">
               <span>Tidak, Lanjut Pengisian Data</span> ➡️

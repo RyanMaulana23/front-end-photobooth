@@ -186,6 +186,37 @@ POST /api/customers/:sessionId
       └── simpan ke tabel customers
 ```
 
+
+## alur sistem sequential processing queue pengiriman foto.
+User mengisi data 
+↓ 
+User klik "Kirim" 
+↓
+Validasi data 
+↓
+Upload / proses Foto 1 
+↓
+Tunggu sampai selesai 
+↓
+Upload / proses Foto 2 
+↓
+Tunggu sampai selesai 
+↓ 
+Upload / proses Foto 3 
+↓ 
+Tunggu sampai selesai 
+↓
+Semua foto selesai 
+↓ 
+Buat / upload folder ZIP 
+↓ 
+Tunggu sampai ZIP selesai 
+↓
+Kirim email 
+↓ 
+Tunggu response email berhasil 
+↓ 
+Tampilkan Success
 ---
 
 ## Caching Strategy

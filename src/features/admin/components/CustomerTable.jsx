@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import {
+  formatRelativeTime,
+  formatExactTime,
+  useRelativeTimeTicker,
+} from '../../../utils/dateHelper';
 
 export default function CustomerTable({ customers = [], isLoading = false, onSearchChange, searchEmail = '' }) {
   const [localSearch, setLocalSearch] = useState(searchEmail);
@@ -16,6 +21,9 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
       onSearchChange('');
     }
   };
+
+  // Single lightweight 30-second ticker for live relative time
+  useRelativeTimeTicker(30000);
 
   if (isLoading) {
     return (
@@ -75,12 +83,13 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
               <th className="py-3.5 px-4 font-bold">Jurusan</th>
               <th className="py-3.5 px-4 font-bold">Instagram</th>
               <th className="py-3.5 px-4 font-bold">No HP</th>
+              <th className="py-3.5 px-4 font-bold">Waktu Daftar</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line/40 text-xs text-ink">
             {customers.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-10 text-center text-[#7a7266]">
+                <td colSpan={8} className="py-10 text-center text-[#7a7266]">
                   <p className="font-semibold">Tidak ada data pelanggan ditemukan.</p>
                 </td>
               </tr>
@@ -99,6 +108,17 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
                       {c.instagramUsername ? `@${c.instagramUsername.replace(/^@/, '')}` : '-'}
                     </td>
                     <td className="py-3.5 px-4 font-mono text-[#7a7266]">{c.phoneNumber || '-'}</td>
+                    <td className="py-3.5 px-4 text-[#7a7266]">
+                      <span
+                        className="relative group/ctime cursor-default"
+                        title={formatExactTime(c.createdAt || c.created_at)}
+                      >
+                        {formatRelativeTime(c.createdAt || c.created_at)}
+                        <span className="absolute left-0 -bottom-7 z-50 hidden group-hover/ctime:block px-2.5 py-1 rounded-lg bg-ink text-white text-[10px] font-sans whitespace-nowrap shadow-lg pointer-events-none">
+                          {formatExactTime(c.createdAt || c.created_at)}
+                        </span>
+                      </span>
+                    </td>
                   </tr>
                 );
               })
