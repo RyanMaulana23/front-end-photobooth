@@ -14,6 +14,7 @@ export default async function handleFormSubmit(
     isSubmittingRef,
     setSubmissionState,
     setStep,
+    setZipUrl,
     STEPS,
   },
 ) {
@@ -34,7 +35,7 @@ export default async function handleFormSubmit(
       throw new Error('Layanan pengiriman belum tersedia.');
     }
 
-    await submitSessionMutation.mutateAsync({
+    const result = await submitSessionMutation.mutateAsync({
       sessionId,
       photos,
       compiledStrip,
@@ -48,6 +49,10 @@ export default async function handleFormSubmit(
         }));
       },
     });
+
+    if (result?.customerResult?.zipUrl) {
+      setZipUrl(result.customerResult.zipUrl);
+    }
 
     setStep(STEPS.EMAIL_SUCCESS);
   } catch (error) {

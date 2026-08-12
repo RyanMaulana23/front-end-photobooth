@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../config/axios';
@@ -7,16 +7,19 @@ import { LAYOUT_CONFIGS, FILTERS, getMaxPhotos } from '../constants/photobooth';
 const getTemplateByPhotosCount = (photosCount, sessionId = '') => {
   if (photosCount === 2) return 'layout5';
   if (photosCount === 3) {
-    const code = sessionId ? (sessionId.charCodeAt(sessionId.length - 1) || 0) : 0;
+    const code = sessionId
+      ? sessionId.charCodeAt(sessionId.length - 1) || 0
+      : 0;
     return code % 2 === 0 ? 'layout3' : 'layout4';
   }
   if (photosCount === 4) {
-    const code = sessionId ? (sessionId.charCodeAt(sessionId.length - 1) || 0) : 0;
+    const code = sessionId
+      ? sessionId.charCodeAt(sessionId.length - 1) || 0
+      : 0;
     return code % 2 === 0 ? 'layout1' : 'layout2';
   }
   return 'layout1';
 };
-
 
 /* =========================================================
     Mock Data
@@ -73,6 +76,7 @@ function generateRandomSessions(count = 16) {
       filterLabel: FILTERS.find((f) => f.id === filter)?.label || 'Normal',
       layoutLabel: LAYOUT_CONFIGS[template]?.name || 'Template',
       photos: shuffledPhotos.slice(0, maxPhotos),
+      isMock: true,
     };
   });
 }
@@ -138,7 +142,13 @@ function PhotoStrip({ template, photos, filter, height = 260 }) {
    ========================================================= */
 function GalleryCard({ session, stripHeight = 280 }) {
   const [hovered, setHovered] = useState(false);
-  const template = session.template || getTemplateByPhotosCount(session.photos.length, String(session.id));
+  const isMock = session.isMock;
+  const photosCount = isMock
+    ? session.photos.length
+    : session.photos.length - 1;
+  const template =
+    session.template ||
+    getTemplateByPhotosCount(photosCount, String(session.id));
   const config = LAYOUT_CONFIGS[template];
   // Calculate card width based on strip aspect ratio + polaroid padding
   const innerH = stripHeight - 36 - 16; // subtract caption(36) + top+bottom padding(8+8)
@@ -174,13 +184,27 @@ function GalleryCard({ session, stripHeight = 280 }) {
           boxSizing: 'border-box',
         }}
       >
-        {/* Photo strip — exact width/height so photos are always visible */}
-        <PhotoStrip
-          template={template}
-          photos={session.photos}
-          filter={session.filter || 'none'}
-          height={innerH}
-        />
+        {isMock ? (
+          /* Photo strip — exact width/height so photos are always visible */
+          <PhotoStrip
+            template={template}
+            photos={session.photos}
+            filter={session.filter || 'none'}
+            height={innerH}
+          />
+        ) : (
+          <div
+            className="w-full h-full bg-[#fcfbf9] overflow-hidden rounded-xs"
+            style={{ height: innerH }}
+          >
+            <img
+              src={session.photos[session.photos.length - 1]}
+              alt={session.name}
+              className="w-full h-full object-contain"
+              draggable={false}
+            />
+          </div>
+        )}
 
         {/* Caption */}
         <div
@@ -191,7 +215,7 @@ function GalleryCard({ session, stripHeight = 280 }) {
             {session.name}
           </span>
           <span className="text-[8px] text-coral font-mono leading-none">
-            {session.filterLabel}
+            {isMock ? session.filterLabel : session.layoutLabel || 'DSCBooth'}
           </span>
         </div>
       </div>
@@ -339,16 +363,27 @@ export default function Gallery() {
     staleTime: 1000 * 30,
   });
 
-  // Fallback to random mock sessions if no real database sessions exist yet
-  const displaySessions = serverSessions.length > 0
-    ? serverSessions
-    : generateRandomSessions(16);
+  const displaySessions = useMemo(() => {
+    if (serverSessions.length > 0) {
+      return [...serverSessions].sort((a, b) => {
+        const hashA = String(a.id || '')
+          .split('')
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hashB = String(b.id || '')
+          .split('')
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return (
+          (hashA % 7) - (hashB % 7) ||
+          String(a.id || '').localeCompare(String(b.id || ''))
+        );
+      });
+    }
+    return generateRandomSessions(16);
+  }, [serverSessions]);
 
   const half = Math.ceil(displaySessions.length / 2);
   const row1 = displaySessions.slice(0, half);
   const row2 = displaySessions.slice(half);
-
-
 
   return (
     <section className="flex-1 relative overflow-hidden bg-cream">

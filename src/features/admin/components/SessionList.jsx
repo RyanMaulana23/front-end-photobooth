@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import QRCode from 'react-qr-code';
 import {
   formatRelativeTime,
   formatExactTime,
@@ -12,19 +13,31 @@ export default function SessionList({
 }) {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [qrModalUrl, setQrModalUrl] = useState(null);
 
   // Build set of existing session IDs
   const existingIds = new Set();
   sessions.forEach((item) => {
-    const s = item.photoSession || item.photo_session || item.session || item || {};
-    const sid = String(s.id || item.id || item.sessionId || item.session_id || '').trim().toLowerCase();
+    const s =
+      item.photoSession || item.photo_session || item.session || item || {};
+    const sid = String(
+      s.id || item.id || item.sessionId || item.session_id || '',
+    )
+      .trim()
+      .toLowerCase();
     if (sid) existingIds.add(sid);
   });
 
   // Synthesize any missing sessions referenced in customers list
   const missingSessions = [];
   customers.forEach((c) => {
-    const cSid = String(c.sessionId || c.session_id || c.photoSessionId || c.photo_session_id || '').trim();
+    const cSid = String(
+      c.sessionId ||
+        c.session_id ||
+        c.photoSessionId ||
+        c.photo_session_id ||
+        '',
+    ).trim();
     if (cSid && !existingIds.has(cSid.toLowerCase())) {
       existingIds.add(cSid.toLowerCase());
       missingSessions.push({
@@ -70,9 +83,7 @@ export default function SessionList({
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     const sessionId =
-      item.photoSession?.id?.toLowerCase() ||
-      item.id?.toLowerCase() ||
-      '';
+      item.photoSession?.id?.toLowerCase() || item.id?.toLowerCase() || '';
     const customerName =
       item.customer?.name?.toLowerCase() ||
       item.customer?.nama?.toLowerCase() ||
@@ -242,7 +253,11 @@ export default function SessionList({
             let resolvedPhotos = directPhotos.filter((p) => {
               if (!p) return false;
               const pSid = String(
-                p.session_id || p.sessionId || p.folder_name || p.folderName || '',
+                p.session_id ||
+                  p.sessionId ||
+                  p.folder_name ||
+                  p.folderName ||
+                  '',
               )
                 .trim()
                 .toLowerCase();
@@ -362,27 +377,49 @@ export default function SessionList({
                   </div>
 
                   {zipUrl ? (
-                    <a
-                      href={zipUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-terracotta/10 hover:bg-terracotta text-terracotta hover:text-white border border-terracotta/20 text-xs font-bold transition-all decoration-none w-fit cursor-pointer"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setQrModalUrl(zipUrl)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-maroon/10 hover:bg-maroon text-maroon hover:text-white border border-maroon/20 text-xs font-bold transition-all w-fit cursor-pointer"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                        />
-                      </svg>
-                      <span>Unduh Arsip ZIP</span>
-                    </a>
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 4v1m6 11h2m-6 0h-2v4m0-16v.01M4 12h2m0 0h2v-4m0 8h-2v4m12-4h-2m0 0v-4"
+                          />
+                        </svg>
+                        <span>QR Code</span>
+                      </button>
+
+                      <a
+                        href={zipUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-terracotta/10 hover:bg-terracotta text-terracotta hover:text-white border border-terracotta/20 text-xs font-bold transition-all decoration-none w-fit cursor-pointer"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        <span>Unduh Arsip ZIP</span>
+                      </a>
+                    </div>
                   ) : (
                     <span className="text-[11px] text-[#a79c8c] italic">
                       Arsip ZIP belum tersedia
@@ -457,10 +494,9 @@ export default function SessionList({
                               photo.path ||
                               '';
 
-                        const pUrl =
-                          !rawUrl
-                            ? ''
-                            : rawUrl.startsWith('http://') ||
+                        const pUrl = !rawUrl
+                          ? ''
+                          : rawUrl.startsWith('http://') ||
                               rawUrl.startsWith('https://') ||
                               rawUrl.startsWith('data:')
                             ? rawUrl
@@ -531,6 +567,51 @@ export default function SessionList({
               alt="Preview"
               className="w-auto h-auto max-h-[80vh] rounded-xl object-contain mx-auto"
             />
+          </div>
+        </div>
+      )}
+
+      {/* QR Code Modal */}
+      {qrModalUrl && (
+        <div
+          onClick={() => setQrModalUrl(null)}
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-sm bg-white rounded-2xl p-6 shadow-2xl overflow-hidden text-center space-y-4"
+          >
+            <button
+              onClick={() => setQrModalUrl(null)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-sidebar flex items-center justify-center text-sm font-bold text-maroon hover:bg-maroon hover:text-white transition-colors cursor-pointer"
+            >
+              ✕
+            </button>
+            <h3 className="text-md font-bold text-maroon font-display mt-2">
+              Unduh ZIP via QR Code
+            </h3>
+            <p className="text-xs text-[#8a7f71]">
+              Pindai kode QR ini menggunakan perangkat seluler untuk mengunduh
+              arsip foto secara langsung.
+            </p>
+            <div className="p-4 bg-white rounded-xl shadow-inner border border-line flex items-center justify-center max-w-50 mx-auto">
+              <QRCode
+                value={qrModalUrl}
+                size={180}
+                style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                viewBox="0 0 256 256"
+                fgColor="#1c1712"
+                bgColor="#ffffff"
+              />
+            </div>
+            <a
+              href={qrModalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-terracotta hover:bg-terracotta-dark text-white text-xs font-bold transition-all decoration-none w-full justify-center cursor-pointer"
+            >
+              <span>Buka Tautan Langsung</span> 📥
+            </a>
           </div>
         </div>
       )}

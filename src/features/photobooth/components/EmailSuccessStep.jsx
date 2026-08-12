@@ -1,9 +1,12 @@
+import QRCode from 'react-qr-code';
+
 export default function EmailSuccessStep({
   formData,
   handleDownloadStrip,
   handlePrintTrigger,
   setStep,
   STEPS,
+  zipUrl,
 }) {
   return (
     <div className="w-full max-w-md text-center flex flex-col items-center justify-center animate-fade-in py-10">
@@ -21,10 +24,39 @@ export default function EmailSuccessStep({
         <strong className="text-terracotta">{formData.email}</strong>
       </p>
 
+      {/* QR Code and Direct Download Container */}
+      {zipUrl && (
+        <div className="w-full bg-[#fcf8f2] border border-line rounded-2xl p-5 mb-6 flex flex-col items-center gap-4 text-center">
+          <div className="text-xs font-bold text-maroon flex items-center gap-1.5">
+            <span>Scan QR untuk Download ZIP</span> 📱
+          </div>
+
+          <div className="p-3 bg-white rounded-xl shadow-inner border border-line flex items-center justify-center">
+            <QRCode
+              value={zipUrl}
+              size={128}
+              style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+              viewBox="0 0 256 256"
+              fgColor="#1c1712"
+              bgColor="#ffffff"
+            />
+          </div>
+
+          <a
+            href={zipUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full text-xs font-bold rounded-lg border-2 border-terracotta text-terracotta hover:bg-terracotta hover:text-white py-2 text-center transition-all flex items-center justify-center gap-1"
+          >
+            <span>Unduh ZIP Langsung</span> 📥
+          </a>
+        </div>
+      )}
+
       {/* Download CTA */}
       <div className="w-full bg-[#fcf8f2] border border-line rounded-2xl p-4 mb-8 text-left">
         <div className="text-xs font-bold text-maroon mb-2 flex items-center gap-1.5">
-          <span>Unduh Langsung</span> 📥
+          <span>Unduh Langsung</span> 📸
         </div>
         <p className="text-xs text-[#8a7f71] mb-3">
           Kamu juga bisa mengunduh file strip foto langsung ke perangkat ini

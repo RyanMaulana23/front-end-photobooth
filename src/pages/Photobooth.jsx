@@ -51,6 +51,7 @@ export default function Photobooth() {
     printingProgress,
     thankYouCountdown,
     simulatedAvatarSeed,
+    zipUrl,
     videoRef,
     canvasRef,
     devices,
@@ -189,6 +190,7 @@ export default function Photobooth() {
           handlePrintTrigger={handlePrintTrigger}
           setStep={setStep}
           STEPS={STEPS}
+          zipUrl={zipUrl}
         />
       )}
 

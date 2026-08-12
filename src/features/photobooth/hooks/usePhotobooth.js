@@ -1,24 +1,24 @@
-import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { STEPS } from "../../../constants/photobooth";
-import { compilePhotoStrip } from "../utils/canvasHelper";
-import useCamera from "../../../hooks/useCamera";
+import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { STEPS } from '../../../constants/photobooth';
+import useCamera from '../../../hooks/useCamera';
+import { compilePhotoStrip } from '../utils/canvasHelper';
 
 // Import decoupled handlers (1 file 1 function)
-import triggerCaptureSequence from "./utils/triggerCaptureSequence";
-import takeSnapshot from "./utils/takeSnapshot";
-import handleStartCapture from "./utils/handleStartCapture";
-import handleRetakeSelect from "./utils/handleRetakeSelect";
-import handleFormSubmit from "./utils/handleFormSubmit";
-import handlePrintTrigger from "./utils/handlePrintTrigger";
-import handleDownloadStrip from "./utils/handleDownloadStrip";
-import resetAll from "./utils/resetAll";
-import getProgressPercent from "./utils/getProgressPercent";
+import { useFaceTracking } from './useFaceTracking';
 import {
   useCreatePhotoSession,
   useSubmitPhotoboothSession,
-} from "./usePhotoboothApi";
-import { useFaceTracking } from "./useFaceTracking";
+} from './usePhotoboothApi';
+import getProgressPercent from './utils/getProgressPercent';
+import handleDownloadStrip from './utils/handleDownloadStrip';
+import handleFormSubmit from './utils/handleFormSubmit';
+import handlePrintTrigger from './utils/handlePrintTrigger';
+import handleRetakeSelect from './utils/handleRetakeSelect';
+import handleStartCapture from './utils/handleStartCapture';
+import resetAll from './utils/resetAll';
+import takeSnapshot from './utils/takeSnapshot';
+import triggerCaptureSequence from './utils/triggerCaptureSequence';
 
 export default function usePhotobooth() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function usePhotobooth() {
   // ==========================================
   const [step, setStep] = useState(STEPS.TEMPLATE);
   const [template, setTemplate] = useState(
-    () => location.state?.template || "layout1",
+    () => location.state?.template || 'layout1',
   );
   const [compiledStrip, setCompiledStrip] = useState(null);
   const [photos, setPhotos] = useState([null, null, null, null]);
@@ -44,19 +44,19 @@ export default function usePhotobooth() {
   // Camera & Filter Settings
   const [mirror, setMirror] = useState(true);
   const [flashEnabled, setFlashEnabled] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("none");
-  const [activeARFilter, setActiveARFilter] = useState("none");
+  const [activeFilter, setActiveFilter] = useState('none');
+  const [activeARFilter, setActiveARFilter] = useState('none');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [countdownTime, setCountdownTime] = useState(3);
 
   // Form Input
   const [formData, setFormData] = useState({
-    nama: "",
-    npm: "",
-    email: "",
-    nohp: "",
-    jurusan: "",
-    ig: "",
+    nama: '',
+    npm: '',
+    email: '',
+    nohp: '',
+    jurusan: '',
+    ig: '',
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -71,6 +71,7 @@ export default function usePhotobooth() {
   const [printingProgress, setPrintingProgress] = useState(0);
   const [thankYouCountdown, setThankYouCountdown] = useState(10);
   const [simulatedAvatarSeed, setSimulatedAvatarSeed] = useState(1);
+  const [zipUrl, setZipUrl] = useState('');
 
   // ==========================================
   // Refs
@@ -96,109 +97,6 @@ export default function usePhotobooth() {
 
   // Real-time face tracking model hook
   const { faceTransformRef } = useFaceTracking(videoRef, step === STEPS.PHOTO_CAPTURE);
-
-  // ==========================================
-  // Side Effects
-  // ==========================================
-
-  useEffect(() => {
-    if (!sessionId || startedCaptureSessionRef.current === sessionId) return;
-
-    startedCaptureSessionRef.current = sessionId;
-    handleStartCapture({
-      template,
-      setPhotos,
-      setRetakeTarget,
-      setCapturingIndex,
-      setStep,
-      setCountdown,
-      STEPS,
-    });
-  }, [sessionId, template]);
-
-  // Attach camera stream to HTML Video element
-  useEffect(() => {
-    if (videoRef.current && cameraStream) {
-      videoRef.current.srcObject = cameraStream;
-      videoRef.current.setAttribute("playsinline", "true");
-      videoRef.current.muted = true;
-      videoRef.current.autoplay = true;
-      videoRef.current.playsInline = true;
-      videoRef.current.play().catch(console.warn);
-    }
-  }, [cameraStream, step]);
-
-  // Countdown timer handler
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (countdown === 0) {
-      callTakeSnapshot();
-    }
-  }, [countdown]);
-
-  // Offline mock avatar animator
-  useEffect(() => {
-    if (step === STEPS.PHOTO_CAPTURE && !hasCamera) {
-      const ticker = setInterval(() => {
-        setSimulatedAvatarSeed((s) => (s + 1) % 360);
-      }, 150);
-      return () => clearInterval(ticker);
-    }
-  }, [step, hasCamera]);
-
-  // Canvas photo strip compiler
-  const shouldCompilePreview =
-    step === STEPS.PREVIEW || step === STEPS.EDIT_DECISION;
-
-  useEffect(() => {
-    if (shouldCompilePreview) {
-      const previewSource = { template, photos };
-      if (
-        previewSourceRef.current?.template === template &&
-        previewSourceRef.current?.photos === photos
-      ) {
-        return;
-      }
-
-      previewSourceRef.current = previewSource;
-      const requestId = ++previewRequestRef.current;
-      setCompiledStrip(null);
-      const compilePreview = async () => {
-        try {
-          const dataUrl = await compilePhotoStrip(template, photos);
-          if (requestId === previewRequestRef.current && dataUrl) {
-            setCompiledStrip(dataUrl);
-          }
-          return dataUrl;
-        } catch (err) {
-          console.error(err);
-          return null;
-        }
-      };
-
-      previewCompileQueueRef.current = previewCompileQueueRef.current
-        .catch(() => undefined)
-        .then(compilePreview);
-    }
-  }, [photos, shouldCompilePreview, template]);
-
-  // Exit thank you screen when timer reaches 0
-  useEffect(() => {
-    if (step === STEPS.THANK_YOU) {
-      if (thankYouCountdown > 0) {
-        const timer = setTimeout(() => {
-          setThankYouCountdown(thankYouCountdown - 1);
-        }, 1000);
-        return () => clearTimeout(timer);
-      } else {
-        callResetAll();
-      }
-    }
-  }, [step, thankYouCountdown]);
 
   // ==========================================
   // Wrappers for decoupled handlers
@@ -277,6 +175,7 @@ export default function usePhotobooth() {
       isSubmittingRef,
       setSubmissionState,
       setStep,
+      setZipUrl,
       STEPS,
     });
 
@@ -312,6 +211,113 @@ export default function usePhotobooth() {
 
   const callGetProgressPercent = () => getProgressPercent(step);
 
+  // ==========================================
+  // Side Effects
+  // ==========================================
+
+  useEffect(() => {
+    if (!sessionId || startedCaptureSessionRef.current === sessionId) return;
+
+    startedCaptureSessionRef.current = sessionId;
+    handleStartCapture({
+      template,
+      setPhotos,
+      setRetakeTarget,
+      setCapturingIndex,
+      setStep,
+      setCountdown,
+      STEPS,
+    });
+  }, [sessionId, template]);
+
+  // Attach camera stream to HTML Video element
+  useEffect(() => {
+    if (videoRef.current && cameraStream) {
+      videoRef.current.srcObject = cameraStream;
+      videoRef.current.setAttribute('playsinline', 'true');
+      videoRef.current.muted = true;
+      videoRef.current.autoplay = true;
+      videoRef.current.playsInline = true;
+      videoRef.current.play().catch(console.warn);
+    }
+  }, [cameraStream, step]);
+
+  // Countdown timer handler
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      callTakeSnapshot();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countdown]);
+
+  // Offline mock avatar animator
+  useEffect(() => {
+    if (step === STEPS.PHOTO_CAPTURE && !hasCamera) {
+      const ticker = setInterval(() => {
+        setSimulatedAvatarSeed((s) => (s + 1) % 360);
+      }, 150);
+      return () => clearInterval(ticker);
+    }
+  }, [step, hasCamera]);
+
+  // Canvas photo strip compiler
+  const shouldCompilePreview =
+    step === STEPS.PREVIEW || step === STEPS.EDIT_DECISION;
+
+  useEffect(() => {
+    if (shouldCompilePreview) {
+      const previewSource = { template, photos };
+      if (
+        previewSourceRef.current?.template === template &&
+        previewSourceRef.current?.photos === photos
+      ) {
+        return;
+      }
+
+      previewSourceRef.current = previewSource;
+      const requestId = ++previewRequestRef.current;
+      setCompiledStrip(null);
+      const compilePreview = async () => {
+        try {
+          const dataUrl = await compilePhotoStrip(template, photos);
+          if (requestId === previewRequestRef.current && dataUrl) {
+            setCompiledStrip(dataUrl);
+          }
+          return dataUrl;
+        } catch (err) {
+          console.error(err);
+          return null;
+        }
+      };
+
+      previewCompileQueueRef.current = previewCompileQueueRef.current
+        .catch(() => undefined)
+        .then(compilePreview);
+    }
+  }, [photos, shouldCompilePreview, template]);
+
+  // Exit thank you screen when timer reaches 0
+  useEffect(() => {
+    if (step === STEPS.THANK_YOU) {
+      if (thankYouCountdown > 0) {
+        const timer = setTimeout(() => {
+          setThankYouCountdown(thankYouCountdown - 1);
+        }, 1000);
+        return () => clearTimeout(timer);
+      } else {
+        callResetAll();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, thankYouCountdown]);
+
+
+
   return {
     step,
     setStep,
@@ -343,6 +349,7 @@ export default function usePhotobooth() {
     printingProgress,
     thankYouCountdown,
     simulatedAvatarSeed,
+    zipUrl,
     videoRef,
     canvasRef,
     devices,
@@ -352,7 +359,9 @@ export default function usePhotobooth() {
     faceTransformRef,
     isCreatingSession: createSessionMutation.isPending,
     sessionStartError,
-    isSubmitting: submissionState.status === 'processing' || submitSessionMutation.isPending,
+    isSubmitting:
+      submissionState.status === 'processing' ||
+      submitSessionMutation.isPending,
     submissionError: submissionState.error,
     triggerCaptureSequence: callTriggerCaptureSequence,
     takeSnapshot: callTakeSnapshot,
