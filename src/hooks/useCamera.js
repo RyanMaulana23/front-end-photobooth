@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from 'react';
 
 export default function useCamera(step, STEPS) {
   const [devices, setDevices] = useState([]);
-  const [selectedDevice, setSelectedDevice] = useState("");
+  const [selectedDevice, setSelectedDevice] = useState('');
   const [cameraStream, setCameraStream] = useState(null);
   const [hasCamera, setHasCamera] = useState(false);
 
@@ -15,24 +15,24 @@ export default function useCamera(step, STEPS) {
     }
   }, [cameraStream]);
 
-  const loadDevices = async () => {
+  const loadDevices = useCallback(async () => {
     try {
       const list = await navigator.mediaDevices.enumerateDevices();
-
-      const cams = list.filter((d) => d.kind === "videoinput");
-
+      const cams = list.filter((d) => d.kind === 'videoinput');
       setDevices(cams);
-
-      if (!selectedDevice && cams.length > 0) {
-        setSelectedDevice(cams[0].deviceId);
-      }
+      setSelectedDevice((curr) => {
+        if (!curr && cams.length > 0) {
+          return cams[0].deviceId;
+        }
+        return curr;
+      });
     } catch (err) {
       console.warn(err);
     }
-  };
+  }, []);
 
   const startCamera = useCallback(
-    async (deviceId = "") => {
+    async (deviceId = '') => {
       stopCamera();
 
       try {
@@ -49,78 +49,75 @@ export default function useCamera(step, STEPS) {
         };
 
         if (deviceId) {
-          constraints.video.deviceId = {
-            exact: deviceId,
-          };
+          constraints.video.deviceId = deviceId;
         } else {
           constraints.video.facingMode = isMobile
             ? {
-                ideal: "user",
+                ideal: 'user',
               }
-            : "user";
+            : 'user';
         }
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
         setCameraStream(stream);
-
         setHasCamera(true);
-
         await loadDevices();
-
         return stream;
       } catch (err) {
-        console.warn("Device gagal, mencoba fallback...", err);
+        console.warn('Device gagal, mencoba fallback...', err);
 
         try {
           const fallback = await navigator.mediaDevices.getUserMedia({
             video: true,
-
             audio: false,
           });
 
           setCameraStream(fallback);
-
           setHasCamera(true);
-
           await loadDevices();
-
           return fallback;
         } catch (e) {
           console.warn(e);
-
           setHasCamera(false);
-
           return null;
         }
       }
     },
-    [stopCamera],
+    [stopCamera, loadDevices, isMobile],
   );
+
+  // Monitor device changes (plug/unplug USB cameras)
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      loadDevices();
+    });
+    navigator.mediaDevices.addEventListener('devicechange', loadDevices);
+    return () => {
+      navigator.mediaDevices.removeEventListener('devicechange', loadDevices);
+    };
+  }, [loadDevices]);
 
   useEffect(() => {
     if (step === STEPS.PHOTO_CAPTURE) {
-      startCamera(selectedDevice);
+      Promise.resolve().then(() => {
+        startCamera(selectedDevice);
+      });
     } else {
-      stopCamera();
+      Promise.resolve().then(() => {
+        stopCamera();
+      });
     }
 
     return stopCamera;
-  }, [step, selectedDevice]);
+  }, [step, selectedDevice, startCamera, stopCamera, STEPS.PHOTO_CAPTURE]);
 
   return {
     devices,
-
     selectedDevice,
-
     setSelectedDevice,
-
     cameraStream,
-
     hasCamera,
-
     startCamera,
-
     stopCamera,
   };
 }
