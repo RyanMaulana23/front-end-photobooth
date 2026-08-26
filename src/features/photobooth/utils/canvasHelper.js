@@ -252,3 +252,138 @@ export const compilePhotoStrip = (template, photos) => {
     frameImg.src = config.image;
   });
 };
+
+const frameOverlayCache = {};
+
+/**
+ * Generates a processed PNG frame overlay where white placeholder slot backgrounds are cleared to transparent.
+ * Caches the result per template to ensure instant high-performance rendering.
+ */
+export const getProcessedFrameOverlay = (template) => {
+  const config = LAYOUT_CONFIGS[template];
+  if (!config) return Promise.resolve(null);
+
+  if (frameOverlayCache[template]) {
+    return Promise.resolve(frameOverlayCache[template]);
+  }
+
+  return new Promise((resolve) => {
+    const frameImg = new Image();
+    frameImg.crossOrigin = "anonymous";
+    frameImg.onload = () => {
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = config.width;
+      tempCanvas.height = config.height;
+      const tempCtx = tempCanvas.getContext("2d");
+      tempCtx.drawImage(frameImg, 0, 0);
+
+      const imgData = tempCtx.getImageData(
+        0,
+        0,
+        tempCanvas.width,
+        tempCanvas.height,
+      );
+      const data = imgData.data;
+      const slots = config.slots;
+      const stickerZones = config.stickerZones || [];
+      const whiteStickerZones = config.whiteStickerZones || [];
+      const whiteSlotSeeds = config.whiteSlotSeeds || [];
+
+      if (whiteSlotSeeds.length) {
+        clearConnectedWhiteBackground(
+          data,
+          config.width,
+          config.height,
+          whiteSlotSeeds,
+          config.whitenessThreshold || 200,
+        );
+      } else {
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+
+          const pixelIndex = i / 4;
+          const px = pixelIndex % config.width;
+          const py = Math.floor(pixelIndex / config.width);
+
+          let insideSlot = false;
+          for (let s = 0; s < slots.length; s++) {
+            const slot = slots[s];
+            if (
+              px >= slot.x &&
+              px < slot.x + slot.w &&
+              py >= slot.y &&
+              py < slot.y + slot.h
+            ) {
+              insideSlot = true;
+              break;
+            }
+          }
+
+          let insideProtection = false;
+          const zones = config.protectionZones || [];
+          for (let z = 0; z < zones.length; z++) {
+            const zone = zones[z];
+            if (
+              px >= zone.x &&
+              px < zone.x + zone.w &&
+              py >= zone.y &&
+              py < zone.y + zone.h
+            ) {
+              insideProtection = true;
+              break;
+            }
+          }
+
+          if (insideSlot && !insideProtection) {
+            if (config.clearSlotBackground) {
+              const insideStickerZone = stickerZones.some(
+                (zone) =>
+                  px >= zone.x &&
+                  px < zone.x + zone.w &&
+                  py >= zone.y &&
+                  py < zone.y + zone.h,
+              );
+              const isPinkSticker = r >= 180 && r - g >= 15 && b >= g;
+              const isWhiteSticker =
+                whiteStickerZones.some(
+                  (zone) =>
+                    px >= zone.x &&
+                    px < zone.x + zone.w &&
+                    py >= zone.y &&
+                    py < zone.y + zone.h,
+                ) &&
+                r >= 245 &&
+                g >= 245 &&
+                b >= 245;
+              const isDarkStickerDetail =
+                insideStickerZone && r < 150 && g < 150 && b < 170;
+
+              if (!isPinkSticker && !isWhiteSticker && !isDarkStickerDetail) {
+                data[i + 3] = 0;
+              }
+              continue;
+            }
+
+            const whiteness = Math.min(r, g, b);
+            const threshold = config.whitenessThreshold || 200;
+            if (whiteness >= threshold && a > 0) {
+              const factor = (whiteness - threshold) / (255 - threshold || 1);
+              data[i + 3] = Math.round(a * (1 - factor));
+            }
+          }
+        }
+      }
+
+      tempCtx.putImageData(imgData, 0, 0);
+      const transparentDataUrl = tempCanvas.toDataURL("image/png");
+      frameOverlayCache[template] = transparentDataUrl;
+      resolve(transparentDataUrl);
+    };
+
+    frameImg.onerror = () => resolve(null);
+    frameImg.src = config.image;
+  });
+};

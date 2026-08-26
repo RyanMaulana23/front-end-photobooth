@@ -58,16 +58,7 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Right: Desktop Actions & CTA */}
-        <div className="hidden md:flex items-center gap-6">
-          <Link
-            to="/photobooth"
-            className="inline-flex items-center gap-2 rounded-pill bg-terracotta hover:bg-terracotta-dark text-white px-5 py-2.5 text-xs font-bold shadow-sm transition-colors decoration-none cursor-pointer"
-          >
-            <CameraIcon className="h-4 w-4" />
-            <span>Mulai Foto</span>
-          </Link>
-        </div>
+      
 
         {/* Mobile Hamburger Trigger & Quick Start Button */}
         <div className="flex md:hidden items-center gap-4">
