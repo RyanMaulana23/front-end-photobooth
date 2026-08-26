@@ -237,6 +237,14 @@ export const AR_FILTERS = [
 
 export const FILTERS = [
   {
+    id: "none",
+    label: "Normal",
+    css: "none",
+    canvasFilter: "none",
+    previewType: "color",
+    previewBg: "#ec4899",
+  },
+  {
     id: "vintage",
     label: "Vintage",
     css: "sepia(0.25) saturate(1.4) contrast(1.0) brightness(1.15) hue-rotate(-25deg)",
@@ -277,14 +285,6 @@ export const FILTERS = [
       "sepia(0.65) saturate(0.8) contrast(1.1) brightness(1.05) hue-rotate(5deg)",
     previewType: "color",
     previewBg: "#e2d3b4",
-  },
-  {
-    id: "none",
-    label: "Normal",
-    css: "none",
-    canvasFilter: "none",
-    previewType: "color",
-    previewBg: "#ec4899",
   },
   {
     id: "bittersweet",
@@ -356,8 +356,7 @@ export const FILTERS = [
     previewType: "image",
   },
 ];
-export const getCameraAspectStyle = (template) => {
-
+export const getCameraAspectStyle = (template, capturingIndex = 0) => {
     const config = LAYOUT_CONFIGS?.[template];
 
     if (!config || !config.slots?.length) {
@@ -367,7 +366,8 @@ export const getCameraAspectStyle = (template) => {
         };
     }
 
-    const slot = config.slots[0];
+    const index = Math.min(capturingIndex, config.slots.length - 1);
+    const slot = config.slots[index];
 
     return {
         aspectRatio: `${slot.w}/${slot.h}`,

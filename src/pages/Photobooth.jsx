@@ -137,6 +137,8 @@ export default function Photobooth() {
           triggerCaptureSequence={triggerCaptureSequence}
           getMaxPhotos={getMaxPhotos}
           getCameraAspectStyle={getCameraAspectStyle}
+          setStep={setStep}
+          STEPS={STEPS}
         />
       )}
 
