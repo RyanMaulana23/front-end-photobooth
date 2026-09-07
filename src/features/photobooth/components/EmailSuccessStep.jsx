@@ -23,13 +23,6 @@ export default function EmailSuccessStep({
 
       <div className="flex flex-col gap-3 w-full">
         <button
-          onClick={handlePrintTrigger}
-          className="rounded-pill bg-terracotta hover:bg-terracotta-dark py-4 text-md font-bold text-white shadow-md transition-all flex items-center justify-center gap-2"
-        >
-          <span>Cetak Hardcopy Foto</span> 🖨️
-        </button>
-
-        <button
           onClick={() => setStep(STEPS.THANK_YOU)}
           className="text-sm text-[#8a7f71] hover:text-maroon font-semibold underline mt-2"
         >
