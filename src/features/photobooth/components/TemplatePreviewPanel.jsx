@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LAYOUT_CONFIGS } from '../../../constants/photobooth';
-import { compilePhotoStrip, getProcessedFrameOverlay } from '../utils/canvasHelper';
+import { compilePhotoStrip } from '../utils/canvasHelper';
 
 export default function TemplatePreviewPanel({
   template = 'layout1',
@@ -12,43 +12,29 @@ export default function TemplatePreviewPanel({
   const totalSlots = slots.length;
   const filledCount = capturedPhotos.filter(Boolean).length;
   const [compiledUrl, setCompiledUrl] = useState(null);
-  const [processedFrameUrl, setProcessedFrameUrl] = useState(null);
 
-  // 1. Process white slot backgrounds out of frame image once per template
-  useEffect(() => {
-    let isMounted = true;
-    getProcessedFrameOverlay(template).then((url) => {
-      if (isMounted && url) {
-        setProcessedFrameUrl(url);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [template]);
-
-  // 2. Compile photo strip canvas when photos are captured or changed
+  // Compile photo strip canvas when all photos are captured or changed
   useEffect(() => {
     let isMounted = true;
 
-    if (filledCount > 0) {
-      compilePhotoStrip(template, capturedPhotos)
-        .then((url) => {
-          if (isMounted) {
-            setCompiledUrl(url);
-          }
-        })
-        .catch((err) => {
-          console.warn('Failed to compile preview strip:', err);
-        });
-    } else {
-      setCompiledUrl(null);
-    }
+    if (filledCount === 0) return;
+
+    compilePhotoStrip(template, capturedPhotos)
+      .then((url) => {
+        if (isMounted) {
+          setCompiledUrl(url);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to compile preview strip:', err);
+      });
 
     return () => {
       isMounted = false;
     };
   }, [template, capturedPhotos, filledCount]);
+
+  const activeCompiledUrl = filledCount > 0 ? compiledUrl : null;
 
   return (
     <div className="w-full lg:w-[320px] shrink-0 flex flex-col items-center animate-fade-in mt-6 lg:mt-0">
@@ -70,10 +56,10 @@ export default function TemplatePreviewPanel({
       {/* Frame Container */}
       <div className="w-full max-w-[270px] lg:max-w-[290px] flex justify-center">
         <div
-          className="relative w-full rounded-2xl overflow-hidden shadow-xl bg-slate-900 transition-all duration-300"
+          className="relative w-full rounded-2xl overflow-hidden shadow-xl bg-white transition-all duration-300"
           style={{ aspectRatio: `${config.width} / ${config.height}` }}
         >
-          {/* Layer 1: DOM Slots (Photos & Active Indicators) */}
+          {/* Layer 1: DOM Slots - Photos in the back (SEND TO BACK) */}
           {slots.map((slot, index) => {
             const leftPct = (slot.x / config.width) * 100;
             const topPct = (slot.y / config.height) * 100;
@@ -112,18 +98,18 @@ export default function TemplatePreviewPanel({
                     className={`w-full h-full flex flex-col items-center justify-center transition-all duration-300 rounded-xs ${
                       isActive
                         ? 'bg-rose-500/20 border-2 border-dashed border-rose-400 animate-pulse shadow-md z-30'
-                        : 'bg-stone-800/60 border border-dashed border-stone-600'
+                        : 'border border-dashed border-black/15 bg-stone-50'
                     }`}
                   >
                     {isActive ? (
-                      <div className="flex flex-col items-center gap-0.5 text-rose-300">
+                      <div className="flex flex-col items-center gap-0.5 text-rose-500">
                         <span className="text-sm animate-bounce">📸</span>
-                        <span className="text-[9px] font-extrabold font-mono uppercase tracking-wider text-white bg-rose-600/80 px-1.5 py-0.5 rounded">
+                        <span className="text-[9px] font-extrabold font-mono uppercase tracking-wider text-white bg-rose-600/90 px-1.5 py-0.5 rounded shadow-xs">
                           SLOT #{index + 1}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-[10px] font-bold font-mono text-stone-400">
+                      <span className="text-[10px] font-bold font-mono text-[#8a7f71]/40">
                         #{index + 1}
                       </span>
                     )}
@@ -138,18 +124,19 @@ export default function TemplatePreviewPanel({
             );
           })}
 
-          {/* Layer 2: Frame Artwork Overlay */}
-          {compiledUrl ? (
+          {/* Layer 2: Full Template Frame Image - Front Overlay layer */}
+          <img
+            src={config.image}
+            alt="Template Frame"
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none z-20 select-none"
+          />
+
+          {/* Layer 3: Final Compiled Strip Overlay (shows when all photos are taken) */}
+          {activeCompiledUrl && filledCount === totalSlots && (
             <img
-              src={compiledUrl}
+              src={activeCompiledUrl}
               alt="Compiled Frame Preview"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none z-20 transition-opacity duration-200"
-            />
-          ) : (
-            <img
-              src={processedFrameUrl || config.image}
-              alt="Template Frame"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none z-20"
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none z-30 transition-opacity duration-200"
             />
           )}
         </div>

@@ -3,17 +3,14 @@ import layout2Image from "../components/frame-layout/layout dsc 2.png";
 import layout3Image from "../components/frame-layout/layout dsc 3.png";
 import layout4Image from "../components/frame-layout/layout dsc 4.png";
 import layout5Image from "../components/frame-layout/layout dsc 5.png";
-
-const MOMENT_CAPTURED_STICKER_ZONES = [
-  { x: 55, y: 40, w: 180, h: 240 }, // Bow
-  { x: 365, y: 35, w: 150, h: 180 }, // Sparkles
-  { x: 105, y: 640, w: 400, h: 135 }, // Ribbon
-  { x: 185, y: 1200, w: 220, h: 180 }, // Heart sticker
-];
-
-const MOMENT_CAPTURED_WHITE_DETAIL_ZONES = [
-  { x: 185, y: 1200, w: 220, h: 180 }, // White flower details on the heart
-];
+import layout6Image from "../components/frame-layout/layout dsc 6.png";
+import layout7Image from "../components/frame-layout/layout dsc 7.png";
+import layout8Image from "../components/frame-layout/layout dsc 8.png";
+import layout9Image from "../components/frame-layout/layout dsc 9.png";
+import layout10Image from "../components/frame-layout/layout dsc 10.png";
+import layout11Image from "../components/frame-layout/layout dsc 11.png";
+import layout12Image from "../components/frame-layout/layout dsc 12.png";
+import layout13Image from "../components/frame-layout/layout dsc 13.png";
 
 export const STEPS = {
   TEMPLATE: 1,
@@ -30,10 +27,10 @@ export const STEPS = {
 export const LAYOUT_CONFIGS = {
   layout1: {
     name: "Watercolor Owl (2x2)",
+    description: "4 Foto dalam kisi 2x2 bertema burung hantu lucu 🌸",
     image: layout1Image,
     width: 788,
     height: 1182,
-    whitenessThreshold: 200,
     slots: [
       { x: 50, y: 65, w: 328, h: 452 }, // Top-Left
       { x: 410, y: 65, w: 328, h: 452 }, // Top-Right
@@ -43,10 +40,10 @@ export const LAYOUT_CONFIGS = {
   },
   layout2: {
     name: "Cloud Kitty (1x4 Strip)",
+    description: "4 Foto vertikal klasik bertema kucing & awan imut ☁️",
     image: layout2Image,
     width: 473,
     height: 1340,
-    whitenessThreshold: 253,
     slots: [
       { x: 49, y: 73, w: 376, h: 255 },
       { x: 49, y: 359, w: 376, h: 255 },
@@ -56,10 +53,10 @@ export const LAYOUT_CONFIGS = {
   },
   layout3: {
     name: "Space Astronaut (1x3 Strip)",
+    description: "3 Foto vertikal bertema luar angkasa & astronaut 🚀",
     image: layout3Image,
     width: 394,
     height: 1182,
-    whitenessThreshold: 200,
     slots: [
       { x: 55, y: 103, w: 284, h: 284 },
       { x: 55, y: 467, w: 284, h: 284 },
@@ -68,34 +65,134 @@ export const LAYOUT_CONFIGS = {
   },
   layout4: {
     name: "Good Vibes (1x3 Shapes)",
+    description: "3 Foto dengan bentuk slot unik & retro vibes 🌼",
     image: layout4Image,
     width: 841,
     height: 1870,
-    whitenessThreshold: 200,
     slots: [
       { x: 92, y: 47, w: 632, h: 478 },
       { x: 102, y: 560, w: 638, h: 403 },
       { x: 99, y: 1005, w: 648, h: 469 },
     ],
-    // One seed per white photo placeholder. The connected-area mask keeps
-    // the flowers and sticker colours above the user's photos perfectly intact.
-    whiteSlotSeeds: [
-      { x: 400, y: 300 },
-      { x: 350, y: 700 },
-      { x: 400, y: 1200 },
-    ],
   },
   layout5: {
     name: "Moment Captured (1x2 Strip)",
+    description: "2 Foto vertikal strip bertema manis & elegan 💖",
     image: layout5Image,
     width: 600,
     height: 1800,
-    clearSlotBackground: true,
-    stickerZones: MOMENT_CAPTURED_STICKER_ZONES,
-    whiteStickerZones: MOMENT_CAPTURED_WHITE_DETAIL_ZONES,
     slots: [
       { x: 66, y: 66, w: 468, h: 588 },
       { x: 66, y: 698, w: 468, h: 560 },
+    ],
+  },
+  layout6: {
+    name: "Movie Theatre (1x3 Strip)",
+    description: "3 Foto vertikal bertema bioskop retro & popcorn 🍿",
+    image: layout6Image,
+    width: 341,
+    height: 1023,
+    slots: [
+      { x: 57, y: 182, w: 228, h: 227 },
+      { x: 57, y: 443, w: 228, h: 227 },
+      { x: 57, y: 704, w: 228, h: 227 },
+    ],
+  },
+  layout7: {
+    name: "Fav Lunch (1x4 Strip)",
+    description: "4 Foto bertema makanan favorit & koki imut 🍔",
+    image: layout7Image,
+    width: 341,
+    height: 1022,
+    slots: [
+      { x: 75, y: 80, w: 241, h: 180 },
+      { x: 75, y: 303, w: 241, h: 180 },
+      { x: 75, y: 527, w: 241, h: 180 },
+      { x: 75, y: 756, w: 241, h: 180 },
+    ],
+  },
+  layout8: {
+    name: "The Hottest Menu (1x3 Strip)",
+    description: "3 Foto bertema papan menu kafe unik & aesthetic ☕",
+    image: layout8Image,
+    width: 339,
+    height: 1021,
+    slots: [
+      { x: 35, y: 188, w: 271, h: 193 },
+      { x: 35, y: 446, w: 271, h: 194 },
+      { x: 35, y: 704, w: 271, h: 193 },
+    ],
+  },
+  layout9: {
+    name: "Denim & Purple (Double Strip)",
+    description: "7 Foto ganda bertema denim biru retro & bintang ungu ⭐",
+    image: layout9Image,
+    width: 679,
+    height: 1014,
+    slots: [
+      { x: 71, y: 60, w: 238, h: 182 },
+      { x: 71, y: 307, w: 238, h: 181 },
+      { x: 71, y: 556, w: 238, h: 182 },
+      { x: 71, y: 778, w: 238, h: 187 },
+      { x: 392, y: 47, w: 230, h: 229 },
+      { x: 392, y: 348, w: 230, h: 229 },
+      { x: 392, y: 643, w: 230, h: 228 },
+    ],
+  },
+  layout10: {
+    name: "Space Galaxy (2x3 Grid)",
+    description: "6 Foto kisi 2x3 bertema galaksi, astronaut & bintang 🌌",
+    image: layout10Image,
+    width: 679,
+    height: 1023,
+    slots: [
+      { x: 69, y: 69, w: 251, h: 251 },
+      { x: 363, y: 69, w: 251, h: 251 },
+      { x: 69, y: 379, w: 251, h: 251 },
+      { x: 363, y: 379, w: 251, h: 251 },
+      { x: 69, y: 689, w: 251, h: 251 },
+      { x: 363, y: 689, w: 251, h: 251 },
+    ],
+  },
+  layout11: {
+    name: "Pastel Memories (2x3 Grid)",
+    description: "6 Foto kisi 2x3 bertema pastel imut, kelinci & awan 🐰",
+    image: layout11Image,
+    width: 675,
+    height: 1012,
+    slots: [
+      { x: 45, y: 57, w: 281, h: 247 },
+      { x: 346, y: 57, w: 281, h: 247 },
+      { x: 45, y: 323, w: 281, h: 247 },
+      { x: 346, y: 323, w: 281, h: 247 },
+      { x: 45, y: 589, w: 281, h: 247 },
+      { x: 346, y: 589, w: 281, h: 247 },
+    ],
+  },
+  layout12: {
+    name: "Meme Cats (2x2 Grid)",
+    description: "4 Foto kisi 2x2 bertema stiker kucing meme kocak 🐱",
+    image: layout12Image,
+    width: 579,
+    height: 868,
+    slots: [
+      { x: 50, y: 58, w: 221, h: 329 },
+      { x: 306, y: 58, w: 221, h: 329 },
+      { x: 50, y: 416, w: 221, h: 327 },
+      { x: 306, y: 416, w: 221, h: 327 },
+    ],
+  },
+  layout13: {
+    name: "Daily Report (1x4 Strip)",
+    description: "4 Foto vertikal bertema koran vintage & berita heboh 📰",
+    image: layout13Image,
+    width: 508,
+    height: 1015,
+    slots: [
+      { x: 170, y: 167, w: 231, h: 159 },
+      { x: 170, y: 335, w: 231, h: 159 },
+      { x: 170, y: 503, w: 231, h: 161 },
+      { x: 170, y: 673, w: 231, h: 247 },
     ],
   },
 };

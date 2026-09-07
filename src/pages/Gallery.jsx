@@ -10,14 +10,24 @@ const getTemplateByPhotosCount = (photosCount, sessionId = '') => {
     const code = sessionId
       ? sessionId.charCodeAt(sessionId.length - 1) || 0
       : 0;
-    return code % 2 === 0 ? 'layout3' : 'layout4';
+    const choices = ['layout3', 'layout4', 'layout6', 'layout8'];
+    return choices[code % choices.length];
   }
   if (photosCount === 4) {
     const code = sessionId
       ? sessionId.charCodeAt(sessionId.length - 1) || 0
       : 0;
-    return code % 2 === 0 ? 'layout1' : 'layout2';
+    const choices = ['layout1', 'layout2', 'layout7', 'layout12', 'layout13'];
+    return choices[code % choices.length];
   }
+  if (photosCount === 6) {
+    const code = sessionId
+      ? sessionId.charCodeAt(sessionId.length - 1) || 0
+      : 0;
+    const choices = ['layout10', 'layout11'];
+    return choices[code % choices.length];
+  }
+  if (photosCount >= 7) return 'layout9';
   return 'layout1';
 };
 
@@ -58,7 +68,21 @@ const MOCK_NAMES = [
    Generate Sessions
    ========================================================= */
 function generateRandomSessions(count = 16) {
-  const layouts = ['layout1', 'layout2', 'layout3', 'layout4', 'layout5'];
+  const layouts = [
+    'layout1',
+    'layout2',
+    'layout3',
+    'layout4',
+    'layout5',
+    'layout6',
+    'layout7',
+    'layout8',
+    'layout9',
+    'layout10',
+    'layout11',
+    'layout12',
+    'layout13',
+  ];
   const filtersList = FILTERS.map((f) => f.id);
 
   return Array.from({ length: count }, (_, i) => {
