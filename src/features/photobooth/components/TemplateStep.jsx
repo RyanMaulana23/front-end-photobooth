@@ -41,7 +41,7 @@ export default function TemplateStep({
                   src={config.image}
                   alt={config.name}
                   className="max-h-full max-w-full object-contain rounded shadow-xs"
-                  loading="lazy"
+                  loading="lazy" 
                 />
               </div>
 
@@ -50,16 +50,7 @@ export default function TemplateStep({
                   {config.name}
                 </h3>
                 <p className="text-xs text-[#8a7f71] mt-1.5 leading-snug min-h-[48px] flex items-center justify-center">
-                  {key === 'layout1' &&
-                    '4 Foto dalam kisi 2x2 bertema burung hantu lucu 🌸'}
-                  {key === 'layout2' &&
-                    '4 Foto vertikal klasik bertema kucing & awan imut ☁️'}
-                  {key === 'layout3' &&
-                    '3 Foto vertikal bertema luar angkasa & astronaut 🚀'}
-                  {key === 'layout4' &&
-                    '3 Foto dengan bentuk slot unik & retro vibes 🌼'}
-                  {key === 'layout5' &&
-                    '2 Foto vertikal strip bertema manis & elegan 💖'}
+                  {config.description}
                 </p>
                 <span className="inline-block mt-3 text-[10px] font-extrabold uppercase tracking-wider bg-terracotta/10 text-terracotta px-2.5 py-1 rounded-full">
                   {maxPhotos} Foto

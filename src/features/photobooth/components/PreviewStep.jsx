@@ -25,7 +25,9 @@ export default function PreviewStep({
             ? 'grid-cols-1 sm:grid-cols-2 max-w-xl'
             : max === 3
               ? 'grid-cols-1 sm:grid-cols-3 max-w-3xl'
-              : 'grid-cols-2 md:grid-cols-4 max-w-4xl'
+              : max === 6
+                ? 'grid-cols-2 md:grid-cols-3 max-w-3xl'
+                : 'grid-cols-2 md:grid-cols-4 max-w-4xl'
         }`}
       >
         {photos.slice(0, max).map((src, idx) => (

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../config/axios';
+import { saveSessionTriggerTime } from '../../../utils/dateHelper';
 
 /**
  * Utility function to convert dataURL/base64 to File object for upload
@@ -66,7 +67,14 @@ export function useCreatePhotoSession() {
   return useMutation({
     mutationFn: async () => {
       const response = await api.post('/photo-sessions');
-      return response.data?.data;
+      const sessionData = response.data?.data;
+      if (sessionData?.id) {
+        saveSessionTriggerTime(
+          sessionData.id,
+          sessionData.createdAt || sessionData.created_at || new Date().toISOString(),
+        );
+      }
+      return sessionData;
     },
   });
 }

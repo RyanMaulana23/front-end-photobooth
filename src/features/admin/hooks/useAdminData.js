@@ -2,6 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import api from '../../../config/axios';
 import { supabase } from '../../../config/supabase';
+import {
+  saveSessionTriggerTime,
+  resolveSessionTimestamp,
+} from '../../../utils/dateHelper';
 
 /**
  * Native Supabase Realtime WebSocket Subscription hook.
@@ -11,6 +15,35 @@ export function useAdminRealtimeSubscription() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    // Listen for realtime photobooth trigger events from the same browser / tabs
+    const handleLocalTrigger = (e) => {
+      const { sessionId, timestamp } = e.detail || {};
+      if (sessionId && timestamp) {
+        queryClient.setQueryData(['admin', 'sessions'], (oldSessions = []) => {
+          return oldSessions.map((s) => {
+            const sId = s.photoSession?.id || s.id;
+            if (
+              sId &&
+              String(sId).toLowerCase() === String(sessionId).toLowerCase()
+            ) {
+              return {
+                ...s,
+                photoSession: {
+                  ...(s.photoSession || s),
+                  createdAt: timestamp,
+                  created_at: timestamp,
+                },
+                createdAt: timestamp,
+                created_at: timestamp,
+              };
+            }
+            return s;
+          });
+        });
+      }
+    };
+    window.addEventListener('dsc_session_timestamp_updated', handleLocalTrigger);
+
     const channel = supabase
       .channel('admin-dashboard-realtime')
       .on(
@@ -24,10 +57,20 @@ export function useAdminRealtimeSubscription() {
                 (s) => (s.photoSession?.id || s.id) === newRow.id,
               );
               if (exists) return oldSessions;
+              const triggerTime =
+                newRow.createdAt ||
+                newRow.created_at ||
+                saveSessionTriggerTime(newRow.id);
               const newSessionItem = {
-                photoSession: newRow,
+                photoSession: {
+                  ...newRow,
+                  createdAt: triggerTime,
+                  created_at: triggerTime,
+                },
                 customer: null,
                 photos: [],
+                createdAt: triggerTime,
+                created_at: triggerTime,
               };
               return [newSessionItem, ...oldSessions];
             }
@@ -57,16 +100,26 @@ export function useAdminRealtimeSubscription() {
         { event: '*', schema: 'public', table: 'customers' },
         (payload) => {
           const { eventType, new: newRow, old: oldRow } = payload;
+          const targetSessionId =
+            newRow?.sessionId || newRow?.session_id || newRow?.photoSessionId;
+          const customerTime =
+            newRow?.createdAt ||
+            newRow?.created_at ||
+            saveSessionTriggerTime(targetSessionId);
+          const enrichedCustomer = newRow
+            ? { ...newRow, createdAt: customerTime, created_at: customerTime }
+            : newRow;
+
           // Update customers table cache
           queryClient.setQueryData(
             ['admin', 'customers', ''],
             (oldCustomers = []) => {
-              if (eventType === 'INSERT' && newRow?.id) {
-                return [newRow, ...oldCustomers];
+              if (eventType === 'INSERT' && enrichedCustomer?.id) {
+                return [enrichedCustomer, ...oldCustomers];
               }
-              if (eventType === 'UPDATE' && newRow?.id) {
+              if (eventType === 'UPDATE' && enrichedCustomer?.id) {
                 return oldCustomers.map((c) =>
-                  c.id === newRow.id ? newRow : c,
+                  c.id === enrichedCustomer.id ? enrichedCustomer : c,
                 );
               }
               if (eventType === 'DELETE' && oldRow?.id) {
@@ -76,9 +129,7 @@ export function useAdminRealtimeSubscription() {
             },
           );
           // Embed customer into matching photo session
-          if (newRow) {
-            const targetSessionId =
-              newRow.sessionId || newRow.session_id || newRow.photoSessionId;
+          if (enrichedCustomer) {
             queryClient.setQueryData(
               ['admin', 'sessions'],
               (oldSessions = []) => {
@@ -90,7 +141,23 @@ export function useAdminRealtimeSubscription() {
                     String(sId).toLowerCase() ===
                       String(targetSessionId).toLowerCase()
                   ) {
-                    return { ...s, customer: newRow };
+                    return {
+                      ...s,
+                      customer: enrichedCustomer,
+                      photoSession: {
+                        ...(s.photoSession || s),
+                        createdAt:
+                          s.photoSession?.createdAt ||
+                          s.photoSession?.created_at ||
+                          customerTime,
+                        created_at:
+                          s.photoSession?.createdAt ||
+                          s.photoSession?.created_at ||
+                          customerTime,
+                      },
+                      createdAt: s.createdAt || customerTime,
+                      created_at: s.created_at || customerTime,
+                    };
                   }
                   return s;
                 });
@@ -155,6 +222,7 @@ export function useAdminRealtimeSubscription() {
       .subscribe();
 
     return () => {
+      window.removeEventListener('dsc_session_timestamp_updated', handleLocalTrigger);
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
@@ -183,7 +251,29 @@ export function useAdminSessions() {
     queryKey: ['admin', 'sessions'],
     queryFn: async () => {
       const response = await api.get('/admins/sessions');
-      return response.data?.data || [];
+      const data = response.data?.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((item) => {
+        const sid = item.photoSession?.id || item.id || item.sessionId;
+        const rawDate =
+          item.photoSession?.createdAt ||
+          item.photoSession?.created_at ||
+          item.createdAt ||
+          item.created_at ||
+          item.customer?.createdAt ||
+          item.customer?.created_at;
+        const timestamp = resolveSessionTimestamp(sid, rawDate);
+        return {
+          ...item,
+          photoSession: {
+            ...(item.photoSession || {}),
+            createdAt: item.photoSession?.createdAt || timestamp,
+            created_at: item.photoSession?.created_at || timestamp,
+          },
+          createdAt: item.createdAt || timestamp,
+          created_at: item.created_at || timestamp,
+        };
+      });
     },
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
@@ -199,7 +289,17 @@ export function useAdminCustomers(email = '') {
     queryFn: async () => {
       const params = email ? { email } : {};
       const response = await api.get('/admins/customers', { params });
-      return response.data?.data || [];
+      const data = response.data?.data;
+      if (!Array.isArray(data)) return [];
+      return data.map((c) => {
+        const sid = c.sessionId || c.session_id || c.photoSessionId || c.id;
+        const timestamp = resolveSessionTimestamp(sid, c.createdAt || c.created_at);
+        return {
+          ...c,
+          createdAt: c.createdAt || timestamp,
+          created_at: c.created_at || timestamp,
+        };
+      });
     },
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,

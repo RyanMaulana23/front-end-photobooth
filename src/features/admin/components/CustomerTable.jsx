@@ -3,6 +3,7 @@ import {
   formatRelativeTime,
   formatExactTime,
   useRelativeTimeTicker,
+  resolveSessionTimestamp,
 } from '../../../utils/dateHelper';
 
 export default function CustomerTable({ customers = [], isLoading = false, onSearchChange, searchEmail = '' }) {
@@ -22,8 +23,8 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
     }
   };
 
-  // Single lightweight 30-second ticker for live relative time
-  useRelativeTimeTicker(30000);
+  // Single adaptive ticker for live relative time on all table rows
+  const now = useRelativeTimeTicker();
 
   if (isLoading) {
     return (
@@ -97,6 +98,10 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
               customers.map((c, index) => {
                 const name = c.name || c.nama || '-';
                 const major = c.major || c.jurusan || '-';
+                const customerDate = resolveSessionTimestamp(
+                  c.sessionId || c.session_id || c.photoSessionId || c.id,
+                  c.createdAt || c.created_at,
+                );
                 return (
                   <tr key={c.id || index} className="hover:bg-cream/50 transition-colors">
                     <td className="py-3.5 px-4 font-mono font-bold text-[#a79c8c]">{index + 1}</td>
@@ -109,15 +114,33 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
                     </td>
                     <td className="py-3.5 px-4 font-mono text-[#7a7266]">{c.phoneNumber || '-'}</td>
                     <td className="py-3.5 px-4 text-[#7a7266]">
-                      <span
-                        className="relative group/ctime cursor-default"
-                        title={formatExactTime(c.createdAt || c.created_at)}
+                      <div
+                        className="relative group/ctime cursor-default flex flex-col font-mono text-[11px]"
+                        title={formatExactTime(customerDate)}
                       >
-                        {formatRelativeTime(c.createdAt || c.created_at)}
-                        <span className="absolute left-0 -bottom-7 z-50 hidden group-hover/ctime:block px-2.5 py-1 rounded-lg bg-ink text-white text-[10px] font-sans whitespace-nowrap shadow-lg pointer-events-none">
-                          {formatExactTime(c.createdAt || c.created_at)}
+                        <span className="font-semibold text-terracotta flex items-center gap-1">
+                          <svg
+                            className="w-3 h-3 text-terracotta shrink-0 animate-pulse"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          {formatRelativeTime(customerDate, now)}
                         </span>
-                      </span>
+                        <span className="text-[10px] text-[#a79c8c] whitespace-nowrap">
+                          {formatExactTime(customerDate)}
+                        </span>
+                        <span className="absolute left-0 -bottom-7 z-50 hidden group-hover/ctime:block px-2.5 py-1 rounded-lg bg-ink text-white text-[10px] font-sans whitespace-nowrap shadow-lg pointer-events-none">
+                          {formatExactTime(customerDate)}
+                        </span>
+                      </div>
                     </td>
                   </tr>
                 );

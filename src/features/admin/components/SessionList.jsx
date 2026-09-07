@@ -4,6 +4,7 @@ import {
   formatRelativeTime,
   formatExactTime,
   useRelativeTimeTicker,
+  resolveSessionTimestamp,
 } from '../../../utils/dateHelper';
 
 export default function SessionList({
@@ -54,28 +55,28 @@ export default function SessionList({
 
   const allSessionsCombined = [...sessions, ...missingSessions];
 
-  // Sort sessions newest first
+  // Sort sessions newest first using resolved real-time frontend dates
   const sortedSessions = [...allSessionsCombined].sort((a, b) => {
     const aSession = a.photoSession || a.photo_session || a.session || a;
     const bSession = b.photoSession || b.photo_session || b.session || b;
-    const aDate = new Date(
+    const aId = aSession.id || a.id || a.sessionId || '';
+    const bId = bSession.id || b.id || b.sessionId || '';
+    const aRaw =
       aSession.createdAt ||
-        aSession.created_at ||
-        a.createdAt ||
-        a.created_at ||
-        a.customer?.createdAt ||
-        a.customer?.created_at ||
-        0,
-    );
-    const bDate = new Date(
+      aSession.created_at ||
+      a.createdAt ||
+      a.created_at ||
+      a.customer?.createdAt ||
+      a.customer?.created_at;
+    const bRaw =
       bSession.createdAt ||
-        bSession.created_at ||
-        b.createdAt ||
-        b.created_at ||
-        b.customer?.createdAt ||
-        b.customer?.created_at ||
-        0,
-    );
+      bSession.created_at ||
+      b.createdAt ||
+      b.created_at ||
+      b.customer?.createdAt ||
+      b.customer?.created_at;
+    const aDate = new Date(resolveSessionTimestamp(aId, aRaw));
+    const bDate = new Date(resolveSessionTimestamp(bId, bRaw));
     return bDate.getTime() - aDate.getTime();
   });
 
@@ -96,8 +97,16 @@ export default function SessionList({
     );
   });
 
-  // Single lightweight 30-second ticker for live relative time on all cards
-  useRelativeTimeTicker(30000);
+  // Single adaptive ticker for live relative time on all session cards
+  const sessionTimestamps = sessions.map(
+    (item) =>
+      item.photoSession?.created_at ||
+      item.photoSession?.createdAt ||
+      item.created_at ||
+      item.createdAt ||
+      item.start_time,
+  );
+  const now = useRelativeTimeTicker(sessionTimestamps);
 
   if (isLoading) {
     return (
@@ -312,6 +321,8 @@ export default function SessionList({
               resolvedPhotos[resolvedPhotos.length - 1]?.createdAt ||
               resolvedPhotos[resolvedPhotos.length - 1]?.created_at;
 
+            const sessionDate = resolveSessionTimestamp(sessionId, rawDate);
+
             const zipUrl =
               session.zipUrl ||
               session.zip_url ||
@@ -347,33 +358,39 @@ export default function SessionList({
               >
                 {/* Session Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-line/50">
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     <span className="px-3 py-1 rounded-pill bg-maroon/10 text-maroon font-mono text-xs font-bold border border-maroon/20">
                       ID: {sessionId}
                     </span>
-                    <span
-                      className="text-xs text-[#7a7266] flex items-center gap-1.5 font-mono relative group/time cursor-default"
-                      title={formatExactTime(rawDate)}
+                    <div
+                      className="text-xs text-[#7a7266] flex flex-wrap items-center gap-1.5 sm:gap-2 font-mono relative group/time cursor-default"
+                      title={formatExactTime(sessionDate)}
                     >
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={1.8}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      {formatRelativeTime(rawDate)}
+                      <span className="inline-flex items-center gap-1 font-semibold text-terracotta bg-terracotta/10 px-2 py-0.5 rounded-md text-[11px]">
+                        <svg
+                          className="w-3.5 h-3.5 text-terracotta shrink-0 animate-pulse"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        {formatRelativeTime(sessionDate, now)}
+                      </span>
+                      <span className="text-[11px] text-[#7a7266] hidden sm:inline-flex items-center gap-1 font-medium">
+                        <span className="text-[#a79c8c]">•</span>
+                        {formatExactTime(sessionDate)}
+                      </span>
                       {/* Tooltip with exact time on hover */}
                       <span className="absolute left-0 -bottom-8 z-50 hidden group-hover/time:block px-2.5 py-1 rounded-lg bg-ink text-white text-[10px] font-sans whitespace-nowrap shadow-lg pointer-events-none">
-                        {formatExactTime(rawDate)}
+                        {formatExactTime(sessionDate)}
                       </span>
-                    </span>
+                    </div>
                   </div>
 
                   {zipUrl ? (

@@ -1,3 +1,5 @@
+import { saveSessionTriggerTime } from '../../../../utils/dateHelper';
+
 /**
  * Orchestrates the complete submission queue from one async flow.
  *
@@ -21,6 +23,9 @@ export default async function handleFormSubmit(
   if (isSubmittingRef.current) return;
 
   isSubmittingRef.current = true;
+  // Trigger realtime timestamp recording on frontend right when email send is clicked
+  saveSessionTriggerTime(sessionId, new Date().toISOString());
+
   setStep(STEPS.PROCESSING);
   setSubmissionState({
     status: 'processing',
