@@ -11,6 +11,8 @@ import layout10Image from "../components/frame-layout/layout dsc 10.png";
 import layout11Image from "../components/frame-layout/layout dsc 11.png";
 import layout12Image from "../components/frame-layout/layout dsc 12.png";
 import layout13Image from "../components/frame-layout/layout dsc 13.png";
+import layout14Image from "../components/frame-layout/layout dsc 14.png";
+import layout15Image from "../components/frame-layout/layout dsc 15.png";
 
 export const STEPS = {
   TEMPLATE: 1,
@@ -193,6 +195,30 @@ export const LAYOUT_CONFIGS = {
       { x: 170, y: 335, w: 231, h: 159 },
       { x: 170, y: 503, w: 231, h: 161 },
       { x: 170, y: 673, w: 231, h: 247 },
+    ],
+  },
+  layout14: {
+    name: "Dicari Orang Hilang (1x4 Strip)",
+    description: "4 Foto vertikal bertema koran investigasi orang hilang & detektif 🔍",
+    image: layout14Image,
+    width: 339,
+    height: 1016,
+    slots: [
+      { x: 14, y: 169, w: 308, h: 171 },
+      { x: 14, y: 434, w: 308, h: 171 },
+      { x: 14, y: 626, w: 308, h: 171 },
+      { x: 14, y: 816, w: 308, h: 171 },
+    ],
+  },
+  layout15: {
+    name: "Handsome Boyfriend (2 Photos)",
+    description: "2 Foto polaroid bersanding bersama foto pacar tampan bertema buku harian LDR 💌",
+    image: layout15Image,
+    width: 577,
+    height: 866,
+    slots: [
+      { x: 58, y: 166, w: 195, h: 203 },
+      { x: 58, y: 452, w: 195, h: 203 },
     ],
   },
 };

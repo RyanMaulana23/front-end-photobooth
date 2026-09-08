@@ -22,12 +22,9 @@ export default function PrintStep({
             top: `${40 - printingProgress * 0.4}%`, // adjust vertical position
             height: `${printingProgress * 0.8}px`, // grows as progress bar moves
             clipPath: 'inset(0px 0px 0px 0px)',
-            aspectRatio:
-              template === 'layout1'
-                ? '788/1182'
-                : template === 'layout2'
-                  ? '473/1340'
-                  : '394/1182',
+            aspectRatio: LAYOUT_CONFIGS[template]
+              ? `${LAYOUT_CONFIGS[template].width}/${LAYOUT_CONFIGS[template].height}`
+              : '394/1182',
           }}
         >
           <img

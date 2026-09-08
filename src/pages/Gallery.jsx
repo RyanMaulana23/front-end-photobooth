@@ -5,7 +5,13 @@ import api from '../config/axios';
 import { LAYOUT_CONFIGS, FILTERS, getMaxPhotos } from '../constants/photobooth';
 
 const getTemplateByPhotosCount = (photosCount, sessionId = '') => {
-  if (photosCount === 2) return 'layout5';
+  if (photosCount === 2) {
+    const code = sessionId
+      ? sessionId.charCodeAt(sessionId.length - 1) || 0
+      : 0;
+    const choices = ['layout5', 'layout15'];
+    return choices[code % choices.length];
+  }
   if (photosCount === 3) {
     const code = sessionId
       ? sessionId.charCodeAt(sessionId.length - 1) || 0
@@ -17,7 +23,7 @@ const getTemplateByPhotosCount = (photosCount, sessionId = '') => {
     const code = sessionId
       ? sessionId.charCodeAt(sessionId.length - 1) || 0
       : 0;
-    const choices = ['layout1', 'layout2', 'layout7', 'layout12', 'layout13'];
+    const choices = ['layout1', 'layout2', 'layout7', 'layout12', 'layout13', 'layout14'];
     return choices[code % choices.length];
   }
   if (photosCount === 6) {
