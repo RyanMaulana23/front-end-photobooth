@@ -28,7 +28,6 @@ export default function CaptureStep({
   hasCamera,
   countdown,
   flash,
-  simulatedAvatarSeed,
   triggerCaptureSequence,
   getMaxPhotos,
   getCameraAspectStyle,
@@ -52,7 +51,8 @@ export default function CaptureStep({
             : `Sesi Foto #${capturingIndex + 1}`}
         </h2>
         <p className="text-xs text-[#7a7266] mb-4">
-          Posisikan dirimu di depan kamera. Klik **START** untuk memulai hitung mundur!
+          Posisikan dirimu di depan kamera. Klik **START** untuk memulai hitung
+          mundur!
         </p>
 
         {/* Top Controls Row */}
@@ -104,8 +104,7 @@ export default function CaptureStep({
             muted
             className={`w-full h-full object-cover ${mirror ? 'transform scale-x-[-1]' : ''}`}
             style={{
-              filter:
-                FILTERS.find((f) => f.id === activeFilter)?.css || 'none',
+              filter: FILTERS.find((f) => f.id === activeFilter)?.css || 'none',
             }}
           />
 
@@ -135,8 +134,7 @@ export default function CaptureStep({
               className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-950 to-slate-800 text-white absolute inset-0 z-5"
               style={{
                 filter:
-                  FILTERS.find((f) => f.id === activeFilter)?.css ||
-                  'none',
+                  FILTERS.find((f) => f.id === activeFilter)?.css || 'none',
               }}
             >
               {/* Animated Simulated User Lens */}
@@ -147,7 +145,8 @@ export default function CaptureStep({
               </div>
 
               <div className="absolute top-4 left-4 bg-red-600 px-3 py-1 text-xs rounded-full font-mono font-bold tracking-widest animate-pulse flex items-center gap-1.5 z-20">
-                <div className="w-2 h-2 rounded-full bg-white" /> REC (SIMULATOR)
+                <div className="w-2 h-2 rounded-full bg-white" /> REC
+                (SIMULATOR)
               </div>
 
               <p className="mt-5 text-sm text-[#c9c1b4] font-medium tracking-wide">
@@ -230,7 +229,8 @@ export default function CaptureStep({
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-extrabold text-maroon font-display">
-                  {FILTERS.find((f) => f.id === activeFilter)?.label || 'Normal'}
+                  {FILTERS.find((f) => f.id === activeFilter)?.label ||
+                    'Normal'}
                 </span>
                 {activeARFilter && activeARFilter !== 'none' && (
                   <span className="text-xs bg-pink-500 text-white font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs">

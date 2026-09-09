@@ -1,10 +1,4 @@
-export default function EmailSuccessStep({
-  formData,
-  handleDownloadStrip,
-  handlePrintTrigger,
-  setStep,
-  STEPS,
-}) {
+export default function EmailSuccessStep({ formData, setStep, STEPS }) {
   return (
     <div className="w-full max-w-md text-center flex flex-col items-center justify-center animate-fade-in py-10">
       <div className="w-20 h-20 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-4xl mb-6 shadow-md border-2 border-green-200">

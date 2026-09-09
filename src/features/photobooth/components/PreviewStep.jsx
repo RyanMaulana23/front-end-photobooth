@@ -2,7 +2,6 @@ export default function PreviewStep({
   photos,
   template,
   getMaxPhotos,
-  getSlotAspectClass,
   getSlotAspectStyle,
   handleRetakeSelect,
   setStep,

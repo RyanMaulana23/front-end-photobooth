@@ -11,15 +11,7 @@ import { renderAROverlay } from '../../utils/ar/renderAROverlay';
 /**
  * Maps face transform from video coordinate space to cover-cropped canvas coordinates.
  */
-function mapTransformToCanvas(
-  transform,
-  sx,
-  sy,
-  sw,
-  sh,
-  canvasWidth,
-  canvasHeight,
-) {
+function mapTransformToCanvas(transform, sx, sy, sw, sh, canvasWidth) {
   if (!transform) return null;
   const scale = canvasWidth / sw;
   return {
