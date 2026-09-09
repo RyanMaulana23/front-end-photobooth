@@ -102,7 +102,7 @@ export default function CaptureStep({
             autoPlay
             playsInline
             muted
-            className={`w-full h-full object-cover ${mirror ? 'transform scale-x-[-1]' : ''} ${hasCamera ? 'block' : 'hidden'}`}
+            className={`w-full h-full object-cover ${mirror ? 'transform scale-x-[-1]' : ''}`}
             style={{
               filter:
                 FILTERS.find((f) => f.id === activeFilter)?.css || 'none',
@@ -129,10 +129,10 @@ export default function CaptureStep({
             </div>
           </div>
 
-          {/* Simulated Camera View */}
+          {/* Simulated Camera View (fallback when no physical camera available) */}
           {!hasCamera && (
             <div
-              className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-950 to-slate-800 text-white absolute inset-0"
+              className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-950 to-slate-800 text-white absolute inset-0 z-5"
               style={{
                 filter:
                   FILTERS.find((f) => f.id === activeFilter)?.css ||

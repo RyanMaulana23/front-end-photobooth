@@ -232,14 +232,37 @@ export default function usePhotobooth() {
 
   // Attach camera stream to HTML Video element
   useEffect(() => {
-    if (videoRef.current && cameraStream) {
-      videoRef.current.srcObject = cameraStream;
-      videoRef.current.setAttribute('playsinline', 'true');
-      videoRef.current.muted = true;
-      videoRef.current.autoplay = true;
-      videoRef.current.playsInline = true;
-      videoRef.current.play().catch(console.warn);
+    const video = videoRef.current;
+    if (!video || !cameraStream) return;
+
+    video.muted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', 'true');
+
+    if (video.srcObject !== cameraStream) {
+      video.srcObject = cameraStream;
     }
+
+    const playVideo = () => {
+      if (video.paused) {
+        video.play().catch((err) => {
+          console.warn('Video play was prevented:', err);
+        });
+      }
+    };
+
+    video.addEventListener('loadedmetadata', playVideo);
+    video.addEventListener('canplay', playVideo);
+
+    if (video.readyState >= 1) {
+      playVideo();
+    }
+
+    return () => {
+      video.removeEventListener('loadedmetadata', playVideo);
+      video.removeEventListener('canplay', playVideo);
+    };
   }, [cameraStream, step]);
 
   // Countdown timer handler
