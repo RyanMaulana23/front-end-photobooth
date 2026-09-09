@@ -152,6 +152,72 @@ code {
   animation: slideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* =============================================
+   Hero Section — Animations & Effects
+   ============================================= */
+
+/* Floating Orbs — slow ambient movement */
+@keyframes heroOrbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -20px) scale(1.08); }
+}
+@keyframes heroOrbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-25px, 15px) scale(1.05); }
+}
+@keyframes heroOrbFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(15px, 20px) scale(1.1); }
+}
+.hero-orb-1 { animation: heroOrbFloat1 8s ease-in-out infinite; }
+.hero-orb-2 { animation: heroOrbFloat2 10s ease-in-out infinite; }
+.hero-orb-3 { animation: heroOrbFloat3 12s ease-in-out infinite; }
+
+/* Staggered entrance animations */
+@keyframes heroEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-entrance-1 { animation: heroEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+.hero-entrance-2 { animation: heroEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+.hero-entrance-3 { animation: heroEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both; }
+.hero-entrance-4 { animation: heroEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
+.hero-entrance-5 { animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both; }
+.hero-entrance-6 { animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both; }
+
+/* Floating photo cards with slight tilt */
+@keyframes heroFloatCardLeft {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50% { transform: rotate(-4deg) translateY(-8px); }
+}
+@keyframes heroFloatCardRight {
+  0%, 100% { transform: rotate(6deg) translateY(0); }
+  50% { transform: rotate(4deg) translateY(-8px); }
+}
+.hero-float-card-left { animation: heroFloatCardLeft 5s ease-in-out infinite; }
+.hero-float-card-right { animation: heroFloatCardRight 5s ease-in-out 0.5s infinite; }
+
+/* CTA button glow pulse */
+@keyframes heroBtnGlow {
+  0%, 100% { box-shadow: 0 10px 24px rgba(154, 60, 38, 0.25); }
+  50% { box-shadow: 0 10px 36px rgba(154, 60, 38, 0.45), 0 0 0 6px rgba(181, 74, 51, 0.08); }
+}
+.hero-btn-glow { animation: heroBtnGlow 3s ease-in-out infinite; }
+
+/* Sparkle icon spin */
+@keyframes heroSparkleSpin {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.7; }
+  50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+  100% { transform: rotate(360deg) scale(1); opacity: 0.7; }
+}
+.hero-sparkle-spin { animation: heroSparkleSpin 4s ease-in-out infinite; }
+
 /* Premium thin scrollbar styles */
 ::-webkit-scrollbar {
   width: 6px;

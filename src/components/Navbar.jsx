@@ -26,10 +26,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <Link to="/" className="flex flex-col decoration-none select-none">
             <span className="text-[24px] font-bold leading-none tracking-tight text-maroon font-display">
-              DSCBooth
-            </span>
-            <span className="mt-0.5 font-mono text-[9px] uppercase tracking-[2px] text-[#a79c8c] leading-none">
-              Vibe Check
+              DSC Photoboth
             </span>
           </Link>
         </div>
@@ -57,8 +54,6 @@ export default function Navbar() {
             );
           })}
         </nav>
-
-      
 
         {/* Mobile Hamburger Trigger & Quick Start Button */}
         <div className="flex md:hidden items-center gap-4">
