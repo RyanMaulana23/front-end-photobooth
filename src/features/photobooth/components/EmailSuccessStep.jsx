@@ -24,9 +24,9 @@ export default function EmailSuccessStep({
       <div className="flex flex-col gap-3 w-full">
         <button
           onClick={() => setStep(STEPS.THANK_YOU)}
-          className="text-sm text-[#8a7f71] hover:text-maroon font-semibold underline mt-2"
+          className="text-sm  hover:text-white font-semibold cursor-pointer mt-2 mx-auto bg-maroon/10 p-2 w-full rounded-md hover:bg-maroon transition-colors duration-300"
         >
-          Lewati Cetak & Selesai
+          Lanjutkan
         </button>
       </div>
     </div>
