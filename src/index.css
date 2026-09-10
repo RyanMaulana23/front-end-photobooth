@@ -218,18 +218,60 @@ code {
 }
 .hero-sparkle-spin { animation: heroSparkleSpin 4s ease-in-out infinite; }
 
-/* Premium thin scrollbar styles */
+/* Premium clean borderless scrollbar styles */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
-}
-::-webkit-scrollbar-track {
   background: transparent;
 }
+::-webkit-scrollbar-track {
+  background: transparent !important;
+  border: none !important;
+}
 ::-webkit-scrollbar-thumb {
-  background: #e4dacb;
-  border-radius: 99px;
+  background: #dcd4c7 !important;
+  border-radius: 99px !important;
+  border: none !important;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
+  background: #b54a33 !important;
+}
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* Custom smooth clean scrollbar for containers */
+.clean-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #dcd4c7 transparent;
+  scroll-behavior: smooth;
+}
+.clean-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  background: transparent;
+}
+.clean-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+  border: none !important;
+}
+.clean-scrollbar::-webkit-scrollbar-thumb {
+  background: #d8cebf !important;
+  border-radius: 9999px !important;
+  border: none !important;
+}
+.clean-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #b54a33 !important;
+}
+.clean-scrollbar::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.clean-scrollbar::-webkit-scrollbar-corner {
+  background: transparent !important;
 }
