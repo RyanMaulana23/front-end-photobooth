@@ -73,7 +73,7 @@ export default function Photobooth() {
   } = usePhotobooth();
 
   return (
-    <section className="flex-1 bg-cream p-6 md:p-12 relative flex flex-col items-center justify-start min-h-[600px] overflow-hidden">
+    <section className="flex-1 bg-cream p-6 md:p-12 relative flex flex-col items-center justify-start min-h-[600px] overflow-x-hidden overflow-y-auto">
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
       {/* Progress Flow Header */}
