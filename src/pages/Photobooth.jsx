@@ -5,19 +5,19 @@ import {
   getMaxPhotos,
   getSlotAspectClass,
   getSlotAspectStyle,
-} from '../constants/photobooth';
-import usePhotobooth from '../features/photobooth/hooks/usePhotobooth';
+} from "../constants/photobooth";
+import usePhotobooth from "../features/photobooth/hooks/usePhotobooth";
 
 // Step components
-import CaptureStep from '../features/photobooth/components/CaptureStep';
-import EditDecisionStep from '../features/photobooth/components/EditDecisionStep';
-import EmailSuccessStep from '../features/photobooth/components/EmailSuccessStep';
-import InputDataStep from '../features/photobooth/components/InputDataStep';
-import PreviewStep from '../features/photobooth/components/PreviewStep';
-import PrintStep from '../features/photobooth/components/PrintStep';
-import ProcessingStep from '../features/photobooth/components/ProcessingStep';
-import TemplateStep from '../features/photobooth/components/TemplateStep';
-import ThankYouStep from '../features/photobooth/components/ThankYouStep';
+import CaptureStep from "../features/photobooth/components/CaptureStep";
+import EditDecisionStep from "../features/photobooth/components/EditDecisionStep";
+import EmailSuccessStep from "../features/photobooth/components/EmailSuccessStep";
+import InputDataStep from "../features/photobooth/components/InputDataStep";
+import PreviewStep from "../features/photobooth/components/PreviewStep";
+import PrintStep from "../features/photobooth/components/PrintStep";
+import ProcessingStep from "../features/photobooth/components/ProcessingStep";
+import TemplateStep from "../features/photobooth/components/TemplateStep";
+import ThankYouStep from "../features/photobooth/components/ThankYouStep";
 
 export default function Photobooth() {
   const {
@@ -74,11 +74,11 @@ export default function Photobooth() {
 
   return (
     <section className="flex-1 bg-cream p-6 md:p-12 relative flex flex-col items-center justify-start min-h-[600px] overflow-x-hidden overflow-y-auto">
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
+      <canvas ref={canvasRef} style={{ display: "none" }} />
 
       {/* Progress Flow Header */}
       {step < STEPS.THANK_YOU && (
-        <div className="w-full max-w-xl mb-8 flex flex-col gap-2">
+        <div className="w-full max-w-xl flex flex-col gap-2">
           <div className="flex justify-between items-center text-sm font-medium text-maroon">
             <span>Alur Sesi Foto</span>
             <span>

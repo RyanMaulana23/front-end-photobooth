@@ -94,15 +94,18 @@ export default function CaptureStep({
         {/* Camera Viewport Frame */}
         <div
           style={getCameraAspectStyle(template, capturingIndex)}
-          className="relative w-full bg-slate-900 rounded-3xl overflow-hidden border-6 border-maroon shadow-2xl transition-all duration-300 group"
+          className="relative w-full min-h-50 bg-slate-900 rounded-3xl overflow-hidden border-6 border-maroon shadow-2xl transition-all duration-300 group"
         >
-          {/* Live Camera Feed */}
+          {/* Live Camera Feed
+              — absolute + inset-0 + object-cover memastikan video selalu memenuhi
+              container tanpa letterbox/pillarbox hitam, meskipun aspect ratio kamera
+              (EOS Webcam Utility) berbeda dari aspect ratio slot template. */}
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted
-            className={`w-full h-full object-cover ${mirror ? 'transform scale-x-[-1]' : ''}`}
+            className={`absolute inset-0 w-full h-full object-cover ${mirror ? 'scale-x-[-1]' : ''}`}
             style={{
               filter: FILTERS.find((f) => f.id === activeFilter)?.css || 'none',
             }}

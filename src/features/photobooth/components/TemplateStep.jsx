@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { LAYOUT_CONFIGS } from '../../../constants/photobooth';
+import { useRef, useState, useEffect, useCallback } from "react";
+import { LAYOUT_CONFIGS } from "../../../constants/photobooth";
 
 export default function TemplateStep({
   template,
@@ -26,23 +26,23 @@ export default function TemplateStep({
     const el = scrollContainerRef.current;
     if (!el) return;
     checkScroll();
-    el.addEventListener('scroll', checkScroll, { passive: true });
-    window.addEventListener('resize', checkScroll);
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
     return () => {
-      el.removeEventListener('scroll', checkScroll);
-      window.removeEventListener('resize', checkScroll);
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
     };
   }, [checkScroll]);
 
   const handleScrollDown = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ top: 400, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ top: 400, behavior: "smooth" });
     }
   };
 
   const handleScrollUp = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ top: -400, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ top: -400, behavior: "smooth" });
     }
   };
 
@@ -52,7 +52,8 @@ export default function TemplateStep({
         Pilih Templatemu ✨
       </h2>
       <p className="text-sm md:text-md text-[#7a7266] mb-3 max-w-md">
-        Pilih gaya strip foto yang sesuai dengan vibe-mu hari ini! Info: 1 sesi = 3 menit.
+        Pilih gaya strip foto yang sesuai dengan vibe-mu hari ini! Info: 1 sesi
+        = 3 menit.
       </p>
 
       {/* Relative wrapper for custom scroll container and fade masks */}
@@ -60,7 +61,7 @@ export default function TemplateStep({
         {/* Soft top gradient fade mask when scrolled */}
         <div
           className={`pointer-events-none absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-cream via-cream/80 to-transparent z-10 transition-opacity duration-300 ${
-            canScrollUp ? 'opacity-100' : 'opacity-0'
+            canScrollUp ? "opacity-100" : "opacity-0"
           }`}
         />
 
@@ -74,15 +75,14 @@ export default function TemplateStep({
               const config = LAYOUT_CONFIGS[key];
               const isSelected = template === key;
               const maxPhotos = getMaxPhotos(key);
-
               return (
                 <div
                   key={key}
                   onClick={() => !isCreatingSession && setTemplate(key)}
                   className={`w-full cursor-pointer rounded-3xl border-3 p-4 flex flex-col items-center justify-between transition-all duration-300 ease-out transform hover:-translate-y-2 hover:shadow-xl ${
                     isSelected
-                      ? 'border-[#f43f5e] bg-pink-50/70 shadow-lg ring-4 ring-pink-500/20 scale-[1.01]'
-                      : 'border-line bg-white hover:border-[#a79c8c] shadow-xs'
+                      ? "border-[#f43f5e] bg-pink-50/70 shadow-lg ring-4 ring-pink-500/20 scale-[1.01]"
+                      : "border-line bg-white hover:border-[#a79c8c] shadow-xs"
                   }`}
                 >
                   {/* Miniature Image Preview */}
@@ -105,8 +105,8 @@ export default function TemplateStep({
                     <span
                       className={`inline-block mt-2.5 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full transition-colors ${
                         isSelected
-                          ? 'bg-[#f43f5e] text-white shadow-xs'
-                          : 'bg-terracotta/10 text-terracotta'
+                          ? "bg-[#f43f5e] text-white shadow-xs"
+                          : "bg-terracotta/10 text-terracotta"
                       }`}
                     >
                       {maxPhotos} Foto
@@ -121,7 +121,7 @@ export default function TemplateStep({
         {/* Soft bottom gradient fade mask */}
         <div
           className={`pointer-events-none absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-cream via-cream/80 to-transparent z-10 transition-opacity duration-300 ${
-            canScrollDown ? 'opacity-100' : 'opacity-0'
+            canScrollDown ? "opacity-100" : "opacity-0"
           }`}
         />
       </div>
@@ -160,7 +160,7 @@ export default function TemplateStep({
         disabled={isCreatingSession}
         className="rounded-pill bg-terracotta hover:bg-terracotta-dark px-12 py-4 text-lg font-bold tracking-wide text-white shadow-start transition-all disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]"
       >
-        {isCreatingSession ? 'Membuat Sesi Foto...' : 'Mulai Sesi Foto 🚀'}
+        {isCreatingSession ? "Membuat Sesi Foto..." : "Mulai Sesi Foto 🚀"}
       </button>
     </div>
   );

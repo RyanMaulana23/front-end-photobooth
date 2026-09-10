@@ -76,8 +76,11 @@ export default function useCamera(step, STEPS) {
         let constraints = {
           audio: false,
           video: {
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
+            // Request the highest resolution available from the camera.
+            // min ensures at least 720p, ideal is 1080p, max allows 4K if supported.
+            width: { min: 1280, ideal: 1920, max: 3840 },
+            height: { min: 720, ideal: 1080, max: 2160 },
+            frameRate: { ideal: 30 },
           },
         };
 
@@ -91,7 +94,10 @@ export default function useCamera(step, STEPS) {
         try {
           stream = await navigator.mediaDevices.getUserMedia(constraints);
         } catch (primaryErr) {
-          console.warn('Primary camera constraints failed, attempting fallback...', primaryErr);
+          console.warn(
+            'Primary camera constraints failed, attempting fallback...',
+            primaryErr,
+          );
           stream = await navigator.mediaDevices.getUserMedia({
             video: deviceId ? { deviceId: { ideal: deviceId } } : true,
             audio: false,
@@ -107,7 +113,8 @@ export default function useCamera(step, STEPS) {
         loadDevices().then((cams) => {
           if (!deviceId && cams.length > 0) {
             const track = stream.getVideoTracks()[0];
-            const activeId = track?.getSettings?.()?.deviceId || cams[0].deviceId;
+            const activeId =
+              track?.getSettings?.()?.deviceId || cams[0].deviceId;
             activeDeviceIdRef.current = activeId;
             setSelectedDevice(activeId);
           }

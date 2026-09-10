@@ -1,4 +1,4 @@
-import { LAYOUT_CONFIGS } from "../../../constants/photobooth";
+import { LAYOUT_CONFIGS } from '../../../constants/photobooth';
 
 /**
  * Combines user photos with a frame template layout.
@@ -21,16 +21,19 @@ export const compilePhotoStrip = (template, photos = []) => {
   if (!config) return Promise.resolve(null);
 
   return new Promise((resolve) => {
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = config.width;
     canvas.height = config.height;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
+    // High-quality resampling so photos placed into slots stay sharp
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     const frameImg = new Image();
-    frameImg.crossOrigin = "anonymous";
+    frameImg.crossOrigin = 'anonymous';
     frameImg.onload = async () => {
       // 1. Fill clean background base
-      ctx.fillStyle = config.backgroundColor || "#ffffff";
+      ctx.fillStyle = config.backgroundColor || '#ffffff';
       ctx.fillRect(0, 0, config.width, config.height);
 
       // 2. Render user photos in the back (SEND TO BACK)
@@ -40,11 +43,14 @@ export const compilePhotoStrip = (template, photos = []) => {
 
         return new Promise((res) => {
           const photoImg = new Image();
-          photoImg.crossOrigin = "anonymous";
+          photoImg.crossOrigin = 'anonymous';
           photoImg.onload = () => {
             ctx.save();
+            // Maintain high-quality smoothing inside the clip region
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             ctx.beginPath();
-            if (slot.radius && typeof ctx.roundRect === "function") {
+            if (slot.radius && typeof ctx.roundRect === 'function') {
               ctx.roundRect(slot.x, slot.y, slot.w, slot.h, slot.radius);
             } else {
               ctx.rect(slot.x, slot.y, slot.w, slot.h);
@@ -79,7 +85,7 @@ export const compilePhotoStrip = (template, photos = []) => {
       ctx.drawImage(frameImg, 0, 0, config.width, config.height);
 
       // 4. Export canvas as final image
-      resolve(canvas.toDataURL("image/png"));
+      resolve(canvas.toDataURL('image/png'));
     };
 
     frameImg.onerror = () => resolve(null);

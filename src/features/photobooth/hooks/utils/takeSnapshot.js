@@ -74,20 +74,38 @@ export default function takeSnapshot({
   const vHeight = video?.videoHeight ?? 0;
   const hasVideoFrame = hasCamera && video && vWidth > 0 && vHeight > 0;
 
+  // Capture at high resolution to preserve webcam quality.
+  // We scale up the canvas by CAPTURE_SCALE so that even small slot sizes
+  // (e.g., 228x227) get captured at full webcam resolution fidelity.
+  // The stored dataURL will be high-res; downscaling only happens at display time.
+  const CAPTURE_SCALE = hasVideoFrame
+    ? Math.min(
+        3,
+        Math.max(vWidth / slot.w, vHeight / slot.h, 1),
+      )
+    : 1;
+
+  const captureW = Math.round(slot.w * CAPTURE_SCALE);
+  const captureH = Math.round(slot.h * CAPTURE_SCALE);
+
   const canvas = document.createElement('canvas');
-  canvas.width = slot.w;
-  canvas.height = slot.h;
+  canvas.width = captureW;
+  canvas.height = captureH;
 
   const ctx = canvas.getContext('2d');
+  // Use high-quality image smoothing for the best downscale result
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
 
   if (hasVideoFrame) {
-    const canvasRatio = canvas.width / canvas.height;
+    const canvasRatio = captureW / captureH;
     const videoRatio = vWidth / vHeight;
     let sx = 0;
     let sy = 0;
     let sw = vWidth;
     let sh = vHeight;
 
+    // object-fit: cover crop — use the full native video resolution as source
     if (videoRatio > canvasRatio) {
       sw = vHeight * canvasRatio;
       sx = (vWidth - sw) / 2;
@@ -99,10 +117,11 @@ export default function takeSnapshot({
     ctx.save();
     ctx.filter = filterVal;
     if (mirror) {
-      ctx.translate(canvas.width, 0);
+      ctx.translate(captureW, 0);
       ctx.scale(-1, 1);
     }
-    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    // Draw the full-resolution video crop onto the high-res canvas
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, captureW, captureH);
     ctx.restore();
 
     // 2. Render AR Overlay on top of captured photo with mapped face transform
@@ -113,7 +132,7 @@ export default function takeSnapshot({
 
       ctx.save();
       if (mirror) {
-        ctx.translate(canvas.width, 0);
+        ctx.translate(captureW, 0);
         ctx.scale(-1, 1);
       }
 
@@ -124,13 +143,13 @@ export default function takeSnapshot({
           sy,
           sw,
           sh,
-          canvas.width,
-          canvas.height,
+          captureW,
+          captureH,
         );
         renderAROverlay(
           ctx,
-          canvas.width,
-          canvas.height,
+          captureW,
+          captureH,
           mappedTransform,
           activeARFilter,
           performance.now(),
@@ -143,19 +162,19 @@ export default function takeSnapshot({
     }
   } else {
     ctx.filter = filterVal;
-    drawMockAvatar(ctx, slot.w, slot.h, simulatedAvatarSeed, capturingIndex);
+    drawMockAvatar(ctx, captureW, captureH, simulatedAvatarSeed, capturingIndex);
 
     if (activeARFilter && activeARFilter !== 'none') {
       const transform = calculateFaceTransform(
         null,
-        slot.w,
-        slot.h,
+        captureW,
+        captureH,
         performance.now(),
       );
       renderAROverlay(
         ctx,
-        slot.w,
-        slot.h,
+        captureW,
+        captureH,
         transform,
         activeARFilter,
         performance.now(),
