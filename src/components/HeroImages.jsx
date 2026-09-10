@@ -1,54 +1,55 @@
+function FloatingCard({ src, name }) {
+  return (
+    <div className="hidden sm:block w-44 sm:w-52 transform rounded-2xl bg-white/80 p-3 shadow-xl backdrop-blur-sm border border-stone-200/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:rotate-0">
+      <div className="overflow-hidden rounded-xl">
+        <img
+          className="h-44 sm:h-52 w-full rounded-xl object-cover transition-transform duration-500 hover:scale-110"
+          src={src}
+          alt={name}
+          loading="lazy"
+          width="400"
+          height="500"
+        />
+      </div>
+      <p className="mt-2.5 text-center font-hand text-sm text-stone-500">
+        {name}
+      </p>
+    </div>
+  );
+}
+
 export default function HeroImages() {
   return (
-    <div className="relative hidden lg:flex justify-end gap-5">
-      <div className="flex w-[220px] flex-col gap-3.5 self-start rounded-[22px] bg-ebony p-3.5">
-        <div className="rounded-[10px] bg-white p-2 text-[9px] text-[#444]">
-          <div className="px-0.5 pb-1 text-[8px] text-[#888]">
-            Welcome back! Ready for new memories?
-          </div>
-          <img
-            className="mb-1.5 h-[100px] w-full rounded-md object-cover"
-            src="https://picsum.photos/seed/friends1/300/200"
-            alt="friends photo preview"
-          />
-          <div className="mx-0.5 rounded-pill bg-terracotta py-1 text-center text-[8px] text-white">
-            Begin Your Session
-          </div>
-        </div>
+    <div className="hero-entrance-5 relative mt-10 flex w-full max-w-4xl items-center justify-center gap-4 px-4 sm:gap-6">
+      {/* Floating Card Kiri */}
+      <FloatingCard
+        src={'https://picsum.photos/seed/friends1/400/500'}
+        name={'Golden Memories ✨'}
+      />
 
-        <img
-          className="h-[148px] w-full rounded-[10px] object-cover"
-          src="https://picsum.photos/seed/camera2/300/200"
-          alt="vintage camera"
-        />
-
-        <div className="rounded-[10px] bg-white p-2 text-[9px] text-[#444]">
+      {/* Card Utama Tengah — premium dark frame */}
+      <div className="w-56 sm:w-64 z-10 transform rounded-2xl bg-stone-900 p-3.5 shadow-2xl shadow-stone-900/30 border border-stone-700/50 transition-all duration-500 hover:scale-105 hover:shadow-3xl">
+        <div className="overflow-hidden rounded-xl bg-stone-800 p-1.5">
           <img
-            className="mb-1.5 h-[100px] w-full rounded-md object-cover"
-            src="https://picsum.photos/seed/sunset3/300/200"
-            alt="sunset frame preview"
+            className="h-56 sm:h-64 w-full rounded-lg object-cover transition-transform duration-500 hover:scale-105"
+            src="https://picsum.photos/seed/camera2/400/500"
+            alt="Photobooth preview"
+            loading="lazy"
+            width="400"
+            height="500"
           />
-          <div className="px-0.5 pb-1 text-[8px] text-[#888]">Start Your Session</div>
+          <div className="mt-2.5 flex items-center justify-between px-1.5 pb-1 text-xs">
+            <span className="font-medium text-stone-400">Photobooth DSC</span>
+            <span className="font-semibold text-terracotta">2026 Edition</span>
+          </div>
         </div>
       </div>
 
-      <div className="mt-10 flex w-[220px] flex-col gap-3.5 self-start rounded-[22px] bg-ebony p-3.5">
-        <img
-          className="h-[158px] w-full rounded-[10px] object-cover"
-          src="https://picsum.photos/seed/album4/300/220"
-          alt="photo album"
-        />
-        <img
-          className="h-[158px] w-full rounded-[10px] object-cover"
-          src="https://picsum.photos/seed/filmstrip5/300/230"
-          alt="film strip"
-        />
-        <img
-          className="h-[158px] w-full rounded-[10px] object-cover"
-          src="https://picsum.photos/seed/flowers6/300/220"
-          alt="flowers"
-        />
-      </div>
+      {/* Floating Card Kanan */}
+      <FloatingCard
+        src={'https://picsum.photos/seed/sunset3/400/500'}
+        name={'Preserved Forever 📸'}
+      />
     </div>
-  )
+  );
 }

@@ -106,6 +106,7 @@ export function useFaceTracking(videoRef, active = true) {
           try {
             await faceMeshInstance.send({ image: video });
           } catch (err) {
+            console.warn('Face Mesh processing error:', err);
             isProcessing = false;
           }
         }
@@ -131,7 +132,9 @@ export function useFaceTracking(videoRef, active = true) {
         );
 
         // Filter out tiny false positives
-        const filtered = rawTransforms.filter((t) => t.faceWidth >= width * 0.13);
+        const filtered = rawTransforms.filter(
+          (t) => t.faceWidth >= width * 0.13,
+        );
 
         if (filtered.length > 0) {
           // Apply temporal smoothing (Exponential Moving Average)

@@ -8,10 +8,7 @@ export default function ThankYouStep({ thankYouCountdown, resetAll }) {
       <h2 className="text-4xl font-bold text-maroon mb-3 font-display">
         Terima Kasih!
       </h2>
-      <p className="text-md text-[#7a7266] mb-8">
-        Sesi fotomu telah selesai. Nikmati momen kebersamaanmu dengan
-        **DSCBooth**!
-      </p>
+      <p className="text-md text-[#7a7266] mb-8">Sesi fotomu telah selesai.</p>
 
       <div className="bg-[#fcf8f2] border border-line rounded-2xl px-6 py-4 mb-10 w-full">
         <p className="text-xs text-[#8a7f71]">

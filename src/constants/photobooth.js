@@ -1,18 +1,18 @@
-import layout1Image from "../components/frame-layout/layout dsc 1.png";
-import layout2Image from "../components/frame-layout/layout dsc 2.png";
-import layout3Image from "../components/frame-layout/layout dsc 3.png";
-import layout4Image from "../components/frame-layout/layout dsc 4.png";
-import layout5Image from "../components/frame-layout/layout dsc 5.png";
-import layout6Image from "../components/frame-layout/layout dsc 6.png";
-import layout7Image from "../components/frame-layout/layout dsc 7.png";
-import layout8Image from "../components/frame-layout/layout dsc 8.png";
-import layout9Image from "../components/frame-layout/layout dsc 9.png";
-import layout10Image from "../components/frame-layout/layout dsc 10.png";
-import layout11Image from "../components/frame-layout/layout dsc 11.png";
-import layout12Image from "../components/frame-layout/layout dsc 12.png";
-import layout13Image from "../components/frame-layout/layout dsc 13.png";
-import layout14Image from "../components/frame-layout/layout dsc 14.png";
-import layout15Image from "../components/frame-layout/layout dsc 15.png";
+import layout1Image from '../components/frame-layout/layout dsc 1.png';
+import layout2Image from '../components/frame-layout/layout dsc 2.png';
+import layout3Image from '../components/frame-layout/layout dsc 3.png';
+import layout4Image from '../components/frame-layout/layout dsc 4.png';
+import layout5Image from '../components/frame-layout/layout dsc 5.png';
+import layout6Image from '../components/frame-layout/layout dsc 6.png';
+import layout7Image from '../components/frame-layout/layout dsc 7.png';
+import layout8Image from '../components/frame-layout/layout dsc 8.png';
+import layout9Image from '../components/frame-layout/layout dsc 9.png';
+import layout10Image from '../components/frame-layout/layout dsc 10.png';
+import layout11Image from '../components/frame-layout/layout dsc 11.png';
+import layout12Image from '../components/frame-layout/layout dsc 12.png';
+import layout13Image from '../components/frame-layout/layout dsc 13.png';
+import layout14Image from '../components/frame-layout/layout dsc 14.png';
+import layout15Image from '../components/frame-layout/layout dsc 15.png';
 
 export const STEPS = {
   TEMPLATE: 1,
@@ -28,8 +28,8 @@ export const STEPS = {
 
 export const LAYOUT_CONFIGS = {
   layout1: {
-    name: "Watercolor Owl (2x2)",
-    description: "4 Foto dalam kisi 2x2 bertema burung hantu lucu 🌸",
+    name: 'Watercolor Owl (2x2)',
+    description: '4 Foto dalam kisi 2x2 bertema burung hantu lucu 🌸',
     image: layout1Image,
     width: 788,
     height: 1182,
@@ -41,8 +41,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout2: {
-    name: "Cloud Kitty (1x4 Strip)",
-    description: "4 Foto vertikal klasik bertema kucing & awan imut ☁️",
+    name: 'Cloud Kitty (1x4 Strip)',
+    description: '4 Foto vertikal klasik bertema kucing & awan imut ☁️',
     image: layout2Image,
     width: 473,
     height: 1340,
@@ -54,8 +54,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout3: {
-    name: "Space Astronaut (1x3 Strip)",
-    description: "3 Foto vertikal bertema luar angkasa & astronaut 🚀",
+    name: 'Space Astronaut (1x3 Strip)',
+    description: '3 Foto vertikal bertema luar angkasa & astronaut 🚀',
     image: layout3Image,
     width: 394,
     height: 1182,
@@ -66,8 +66,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout4: {
-    name: "Good Vibes (1x3 Shapes)",
-    description: "3 Foto dengan bentuk slot unik & retro vibes 🌼",
+    name: 'Good Vibes (1x3 Shapes)',
+    description: '3 Foto dengan bentuk slot unik & retro vibes 🌼',
     image: layout4Image,
     width: 841,
     height: 1870,
@@ -78,8 +78,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout5: {
-    name: "Moment Captured (1x2 Strip)",
-    description: "2 Foto vertikal strip bertema manis & elegan 💖",
+    name: 'Moment Captured (1x2 Strip)',
+    description: '2 Foto vertikal strip bertema manis & elegan 💖',
     image: layout5Image,
     width: 600,
     height: 1800,
@@ -89,8 +89,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout6: {
-    name: "Movie Theatre (1x3 Strip)",
-    description: "3 Foto vertikal bertema bioskop retro & popcorn 🍿",
+    name: 'Movie Theatre (1x3 Strip)',
+    description: '3 Foto vertikal bertema bioskop retro & popcorn 🍿',
     image: layout6Image,
     width: 341,
     height: 1023,
@@ -101,8 +101,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout7: {
-    name: "Fav Lunch (1x4 Strip)",
-    description: "4 Foto bertema makanan favorit & koki imut 🍔",
+    name: 'Fav Lunch (1x4 Strip)',
+    description: '4 Foto bertema makanan favorit & koki imut 🍔',
     image: layout7Image,
     width: 341,
     height: 1022,
@@ -114,8 +114,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout8: {
-    name: "The Hottest Menu (1x3 Strip)",
-    description: "3 Foto bertema papan menu kafe unik & aesthetic ☕",
+    name: 'The Hottest Menu (1x3 Strip)',
+    description: '3 Foto bertema papan menu kafe unik & aesthetic ☕',
     image: layout8Image,
     width: 339,
     height: 1021,
@@ -126,8 +126,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout9: {
-    name: "Denim & Purple (Double Strip)",
-    description: "7 Foto ganda bertema denim biru retro & bintang ungu ⭐",
+    name: 'Denim & Purple (Double Strip)',
+    description: '7 Foto ganda bertema denim biru retro & bintang ungu ⭐',
     image: layout9Image,
     width: 679,
     height: 1014,
@@ -142,8 +142,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout10: {
-    name: "Space Galaxy (2x3 Grid)",
-    description: "6 Foto kisi 2x3 bertema galaksi, astronaut & bintang 🌌",
+    name: 'Space Galaxy (2x3 Grid)',
+    description: '6 Foto kisi 2x3 bertema galaksi, astronaut & bintang 🌌',
     image: layout10Image,
     width: 679,
     height: 1023,
@@ -157,8 +157,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout11: {
-    name: "Pastel Memories (2x3 Grid)",
-    description: "6 Foto kisi 2x3 bertema pastel imut, kelinci & awan 🐰",
+    name: 'Pastel Memories (2x3 Grid)',
+    description: '6 Foto kisi 2x3 bertema pastel imut, kelinci & awan 🐰',
     image: layout11Image,
     width: 675,
     height: 1012,
@@ -172,8 +172,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout12: {
-    name: "Meme Cats (2x2 Grid)",
-    description: "4 Foto kisi 2x2 bertema stiker kucing meme kocak 🐱",
+    name: 'Meme Cats (2x2 Grid)',
+    description: '4 Foto kisi 2x2 bertema stiker kucing meme kocak 🐱',
     image: layout12Image,
     width: 579,
     height: 868,
@@ -185,8 +185,8 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout13: {
-    name: "Daily Report (1x4 Strip)",
-    description: "4 Foto vertikal bertema koran vintage & berita heboh 📰",
+    name: 'Daily Report (1x4 Strip)',
+    description: '4 Foto vertikal bertema koran vintage & berita heboh 📰',
     image: layout13Image,
     width: 508,
     height: 1015,
@@ -198,8 +198,9 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout14: {
-    name: "Dicari Orang Hilang (1x4 Strip)",
-    description: "4 Foto vertikal bertema koran investigasi orang hilang & detektif 🔍",
+    name: 'Dicari Orang Hilang (1x4 Strip)',
+    description:
+      '4 Foto vertikal bertema koran investigasi orang hilang & detektif 🔍',
     image: layout14Image,
     width: 339,
     height: 1016,
@@ -211,8 +212,9 @@ export const LAYOUT_CONFIGS = {
     ],
   },
   layout15: {
-    name: "Handsome Boyfriend (2 Photos)",
-    description: "2 Foto polaroid bersanding bersama foto pacar tampan bertema buku harian LDR 💌",
+    name: 'Handsome Boyfriend (2 Photos)',
+    description:
+      '2 Foto polaroid bersanding bersama foto pacar tampan bertema buku harian LDR 💌',
     image: layout15Image,
     width: 577,
     height: 866,
@@ -229,283 +231,284 @@ export const getMaxPhotos = (template) => {
 
 export const AR_FILTERS = [
   {
-    id: "none",
-    label: "Tanpa AR",
-    category: "ar",
-    icon: "🚫",
-    description: "Matikan filter wajah AR",
-    previewBg: "#f1f5f9",
+    id: 'none',
+    label: 'Tanpa AR',
+    category: 'ar',
+    icon: '🚫',
+    description: 'Matikan filter wajah AR',
+    previewBg: '#f1f5f9',
   },
   {
-    id: "bird",
-    label: "Boothcool Bird",
-    category: "ar",
-    icon: "🐦",
-    description: "Burung biru Boothcool berkedip & mengepak di atas kepala",
-    previewBg: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+    id: 'bird',
+    label: 'Boothcool Bird',
+    category: 'ar',
+    icon: '🐦',
+    description: 'Burung biru Boothcool berkedip & mengepak di atas kepala',
+    previewBg: 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)',
   },
   {
-    id: "hearts",
-    label: "Hearts",
-    category: "ar",
-    icon: "💖",
-    description: "Mahkota hati melayang, pipi merah & kilau bintang",
-    previewBg: "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)",
+    id: 'hearts',
+    label: 'Hearts',
+    category: 'ar',
+    icon: '💖',
+    description: 'Mahkota hati melayang, pipi merah & kilau bintang',
+    previewBg: 'linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)',
   },
   {
-    id: "dog",
-    label: "Puppy Dog",
-    category: "ar",
-    icon: "🐶",
-    description: "Telinga anjing bergerak, hidung imut & lidah melet saat mulut terbuka",
-    previewBg: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+    id: 'dog',
+    label: 'Puppy Dog',
+    category: 'ar',
+    icon: '🐶',
+    description:
+      'Telinga anjing bergerak, hidung imut & lidah melet saat mulut terbuka',
+    previewBg: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
   },
   {
-    id: "sakura",
-    label: "Sakura",
-    category: "ar",
-    icon: "🌸",
-    description: "Kelopak bunga sakura berguguran & kilatan cahaya",
-    previewBg: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+    id: 'sakura',
+    label: 'Sakura',
+    category: 'ar',
+    icon: '🌸',
+    description: 'Kelopak bunga sakura berguguran & kilatan cahaya',
+    previewBg: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
   },
   {
-    id: "glitter",
-    label: "Glitter",
-    category: "ar",
-    icon: "✨",
-    description: "Partikel emas & bintang gemerlap melayang",
-    previewBg: "linear-gradient(135deg, #f5d020 0%, #f5d020 100%)",
+    id: 'glitter',
+    label: 'Glitter',
+    category: 'ar',
+    icon: '✨',
+    description: 'Partikel emas & bintang gemerlap melayang',
+    previewBg: 'linear-gradient(135deg, #f5d020 0%, #f5d020 100%)',
   },
   {
-    id: "bunny",
-    label: "Bunny",
-    category: "ar",
-    icon: "🐰",
-    description: "Telinga kelinci panjang & hidung kelinci merah muda",
-    previewBg: "linear-gradient(135deg, #e2ebf0 0%, #cfd9df 100%)",
+    id: 'bunny',
+    label: 'Bunny',
+    category: 'ar',
+    icon: '🐰',
+    description: 'Telinga kelinci panjang & hidung kelinci merah muda',
+    previewBg: 'linear-gradient(135deg, #e2ebf0 0%, #cfd9df 100%)',
   },
   {
-    id: "cat",
-    label: "Cat",
-    category: "ar",
-    icon: "🐱",
-    description: "Telinga kucing lancip, kumis & hidung kucing kecil",
-    previewBg: "linear-gradient(135deg, #fddb92 0%, #d1f2a5 100%)",
+    id: 'cat',
+    label: 'Cat',
+    category: 'ar',
+    icon: '🐱',
+    description: 'Telinga kucing lancip, kumis & hidung kucing kecil',
+    previewBg: 'linear-gradient(135deg, #fddb92 0%, #d1f2a5 100%)',
   },
   {
-    id: "crown",
-    label: "Princess Crown",
-    category: "ar",
-    icon: "👑",
-    description: "Mahkota emas berkilau mengambang di dahi",
-    previewBg: "linear-gradient(135deg, #ffd700 0%, #fbc2eb 100%)",
+    id: 'crown',
+    label: 'Princess Crown',
+    category: 'ar',
+    icon: '👑',
+    description: 'Mahkota emas berkilau mengambang di dahi',
+    previewBg: 'linear-gradient(135deg, #ffd700 0%, #fbc2eb 100%)',
   },
   {
-    id: "sunglasses",
-    label: "Sunglasses",
-    category: "ar",
-    icon: "🕶️",
-    description: "Kacamata hitam keren terpasang di area mata",
-    previewBg: "linear-gradient(135deg, #1e272e 0%, #485460 100%)",
+    id: 'sunglasses',
+    label: 'Sunglasses',
+    category: 'ar',
+    icon: '🕶️',
+    description: 'Kacamata hitam keren terpasang di area mata',
+    previewBg: 'linear-gradient(135deg, #1e272e 0%, #485460 100%)',
   },
   {
-    id: "santa",
-    label: "Santa",
-    category: "ar",
-    icon: "🎅",
-    description: "Topi merah Santa Claus & jenggot putih tebal",
-    previewBg: "linear-gradient(135deg, #ff4757 0%, #ff6b81 100%)",
+    id: 'santa',
+    label: 'Santa',
+    category: 'ar',
+    icon: '🎅',
+    description: 'Topi merah Santa Claus & jenggot putih tebal',
+    previewBg: 'linear-gradient(135deg, #ff4757 0%, #ff6b81 100%)',
   },
   {
-    id: "halloween",
-    label: "Halloween",
-    category: "ar",
-    icon: "👻",
-    description: "Hantu-hantu kecil terbang mengelilingi kepala",
-    previewBg: "linear-gradient(135deg, #3d3d3d 0%, #1e1e1e 100%)",
+    id: 'halloween',
+    label: 'Halloween',
+    category: 'ar',
+    icon: '👻',
+    description: 'Hantu-hantu kecil terbang mengelilingi kepala',
+    previewBg: 'linear-gradient(135deg, #3d3d3d 0%, #1e1e1e 100%)',
   },
   {
-    id: "christmas",
-    label: "Christmas",
-    category: "ar",
-    icon: "🎄",
-    description: "Daun holly di dahi & efek salju berguguran",
-    previewBg: "linear-gradient(135deg, #2ed573 0%, #7bed9f 100%)",
+    id: 'christmas',
+    label: 'Christmas',
+    category: 'ar',
+    icon: '🎄',
+    description: 'Daun holly di dahi & efek salju berguguran',
+    previewBg: 'linear-gradient(135deg, #2ed573 0%, #7bed9f 100%)',
   },
   {
-    id: "wedding",
-    label: "Wedding",
-    category: "ar",
-    icon: "💍",
-    description: "Tiara bunga & kelopak mawar jatuh berguguran",
-    previewBg: "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)",
+    id: 'wedding',
+    label: 'Wedding',
+    category: 'ar',
+    icon: '💍',
+    description: 'Tiara bunga & kelopak mawar jatuh berguguran',
+    previewBg: 'linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)',
   },
   {
-    id: "wings",
-    label: "Angel Wings",
-    category: "ar",
-    icon: "🪶",
-    description: "Sayap malaikat putih bersinar di kanan kiri kepala",
-    previewBg: "linear-gradient(135deg, #ffffff 0%, #eef2f3 100%)",
+    id: 'wings',
+    label: 'Angel Wings',
+    category: 'ar',
+    icon: '🪶',
+    description: 'Sayap malaikat putih bersinar di kanan kiri kepala',
+    previewBg: 'linear-gradient(135deg, #ffffff 0%, #eef2f3 100%)',
   },
   {
-    id: "rainbow",
-    label: "Rainbow",
-    category: "ar",
-    icon: "🌈",
-    description: "Pelangi indah melengkung & taburan confetti warna-warni",
-    previewBg: "linear-gradient(135deg, #ff7675 0%, #ffeaa7 100%)",
+    id: 'rainbow',
+    label: 'Rainbow',
+    category: 'ar',
+    icon: '🌈',
+    description: 'Pelangi indah melengkung & taburan confetti warna-warni',
+    previewBg: 'linear-gradient(135deg, #ff7675 0%, #ffeaa7 100%)',
   },
 ];
 
 export const FILTERS = [
   {
-    id: "none",
-    label: "Normal",
-    css: "none",
-    canvasFilter: "none",
-    previewType: "color",
-    previewBg: "#ec4899",
+    id: 'none',
+    label: 'Normal',
+    css: 'none',
+    canvasFilter: 'none',
+    previewType: 'color',
+    previewBg: '#ec4899',
   },
   {
-    id: "vintage",
-    label: "Vintage",
-    css: "sepia(0.25) saturate(1.4) contrast(1.0) brightness(1.15) hue-rotate(-25deg)",
+    id: 'vintage',
+    label: 'Vintage',
+    css: 'sepia(0.25) saturate(1.4) contrast(1.0) brightness(1.15) hue-rotate(-25deg)',
     canvasFilter:
-      "sepia(0.25) saturate(1.4) contrast(1.0) brightness(1.15) hue-rotate(-25deg)",
-    previewType: "color",
-    previewBg: "linear-gradient(to bottom, #f472b6, #fb7185)",
+      'sepia(0.25) saturate(1.4) contrast(1.0) brightness(1.15) hue-rotate(-25deg)',
+    previewType: 'color',
+    previewBg: 'linear-gradient(to bottom, #f472b6, #fb7185)',
   },
   {
-    id: "grayscale",
-    label: "Grayscale",
-    css: "grayscale(1) contrast(1.05) brightness(1.05)",
-    canvasFilter: "grayscale(1) contrast(1.05) brightness(1.05)",
-    previewType: "color",
-    previewBg: "#cbd5e1",
+    id: 'grayscale',
+    label: 'Grayscale',
+    css: 'grayscale(1) contrast(1.05) brightness(1.05)',
+    canvasFilter: 'grayscale(1) contrast(1.05) brightness(1.05)',
+    previewType: 'color',
+    previewBg: '#cbd5e1',
   },
   {
-    id: "smooth",
-    label: "Smooth",
-    css: "contrast(0.9) brightness(1.08) saturate(0.9) blur(0.2px)",
-    canvasFilter: "contrast(0.9) brightness(1.08) saturate(0.9)",
-    previewType: "color",
-    previewBg: "#fbcfe8",
+    id: 'smooth',
+    label: 'Smooth',
+    css: 'contrast(0.9) brightness(1.08) saturate(0.9) blur(0.2px)',
+    canvasFilter: 'contrast(0.9) brightness(1.08) saturate(0.9)',
+    previewType: 'color',
+    previewBg: '#fbcfe8',
   },
   {
-    id: "bw",
-    label: "B&W",
-    css: "grayscale(1) contrast(1.5) brightness(0.85)",
-    canvasFilter: "grayscale(1) contrast(1.5) brightness(0.85)",
-    previewType: "color",
-    previewBg: "#334155",
+    id: 'bw',
+    label: 'B&W',
+    css: 'grayscale(1) contrast(1.5) brightness(0.85)',
+    canvasFilter: 'grayscale(1) contrast(1.5) brightness(0.85)',
+    previewType: 'color',
+    previewBg: '#334155',
   },
   {
-    id: "cyber",
-    label: "Cyber",
-    css: "sepia(0.65) saturate(0.8) contrast(1.1) brightness(1.05) hue-rotate(5deg)",
+    id: 'cyber',
+    label: 'Cyber',
+    css: 'sepia(0.65) saturate(0.8) contrast(1.1) brightness(1.05) hue-rotate(5deg)',
     canvasFilter:
-      "sepia(0.65) saturate(0.8) contrast(1.1) brightness(1.05) hue-rotate(5deg)",
-    previewType: "color",
-    previewBg: "#e2d3b4",
+      'sepia(0.65) saturate(0.8) contrast(1.1) brightness(1.05) hue-rotate(5deg)',
+    previewType: 'color',
+    previewBg: '#e2d3b4',
   },
   {
-    id: "bittersweet",
-    label: "Bittersweet",
-    css: "contrast(1.15) sepia(0.2) saturate(0.95) brightness(0.96) hue-rotate(-10deg)",
+    id: 'bittersweet',
+    label: 'Bittersweet',
+    css: 'contrast(1.15) sepia(0.2) saturate(0.95) brightness(0.96) hue-rotate(-10deg)',
     canvasFilter:
-      "contrast(1.15) sepia(0.2) saturate(0.95) brightness(0.96) hue-rotate(-10deg)",
-    previewType: "image",
+      'contrast(1.15) sepia(0.2) saturate(0.95) brightness(0.96) hue-rotate(-10deg)',
+    previewType: 'image',
   },
   {
-    id: "ogvintage",
-    label: "OG Vintage",
-    css: "grayscale(0.7) sepia(0.4) contrast(1.2) brightness(0.9)",
-    canvasFilter: "grayscale(0.7) sepia(0.4) contrast(1.2) brightness(0.9)",
-    previewType: "image",
+    id: 'ogvintage',
+    label: 'OG Vintage',
+    css: 'grayscale(0.7) sepia(0.4) contrast(1.2) brightness(0.9)',
+    canvasFilter: 'grayscale(0.7) sepia(0.4) contrast(1.2) brightness(0.9)',
+    previewType: 'image',
   },
   {
-    id: "fresh",
-    label: "Fresh",
-    css: "contrast(1.1) saturate(1.2) hue-rotate(30deg) brightness(0.98)",
+    id: 'fresh',
+    label: 'Fresh',
+    css: 'contrast(1.1) saturate(1.2) hue-rotate(30deg) brightness(0.98)',
     canvasFilter:
-      "contrast(1.1) saturate(1.2) hue-rotate(30deg) brightness(0.98)",
-    previewType: "image",
+      'contrast(1.1) saturate(1.2) hue-rotate(30deg) brightness(0.98)',
+    previewType: 'image',
   },
   {
-    id: "citrus",
-    label: "Citrus",
-    css: "saturate(1.6) hue-rotate(-10deg) contrast(1.05) sepia(0.15)",
-    canvasFilter: "saturate(1.6) hue-rotate(-10deg) contrast(1.05) sepia(0.15)",
-    previewType: "image",
+    id: 'citrus',
+    label: 'Citrus',
+    css: 'saturate(1.6) hue-rotate(-10deg) contrast(1.05) sepia(0.15)',
+    canvasFilter: 'saturate(1.6) hue-rotate(-10deg) contrast(1.05) sepia(0.15)',
+    previewType: 'image',
   },
   {
-    id: "year2015",
-    label: "2015",
-    css: "contrast(0.9) brightness(0.98) saturate(1.15) hue-rotate(-25deg) sepia(0.1)",
+    id: 'year2015',
+    label: '2015',
+    css: 'contrast(0.9) brightness(0.98) saturate(1.15) hue-rotate(-25deg) sepia(0.1)',
     canvasFilter:
-      "contrast(0.9) brightness(0.98) saturate(1.15) hue-rotate(-25deg) sepia(0.1)",
-    previewType: "image",
+      'contrast(0.9) brightness(0.98) saturate(1.15) hue-rotate(-25deg) sepia(0.1)',
+    previewType: 'image',
   },
   {
-    id: "focus",
-    label: "Focus",
-    css: "contrast(1.35) saturate(1.1) brightness(0.92)",
-    canvasFilter: "contrast(1.35) saturate(1.1) brightness(0.92)",
-    previewType: "image",
+    id: 'focus',
+    label: 'Focus',
+    css: 'contrast(1.35) saturate(1.1) brightness(0.92)',
+    canvasFilter: 'contrast(1.35) saturate(1.1) brightness(0.92)',
+    previewType: 'image',
   },
   {
-    id: "candy",
-    label: "Candy",
-    css: "saturate(1.4) hue-rotate(330deg) contrast(1.08) brightness(1.02)",
+    id: 'candy',
+    label: 'Candy',
+    css: 'saturate(1.4) hue-rotate(330deg) contrast(1.08) brightness(1.02)',
     canvasFilter:
-      "saturate(1.4) hue-rotate(330deg) contrast(1.08) brightness(1.02)",
-    previewType: "image",
+      'saturate(1.4) hue-rotate(330deg) contrast(1.08) brightness(1.02)',
+    previewType: 'image',
   },
   {
-    id: "eighties",
-    label: "80s",
-    css: "sepia(0.55) saturate(1.45) contrast(0.95) brightness(0.95) hue-rotate(-15deg)",
+    id: 'eighties',
+    label: '80s',
+    css: 'sepia(0.55) saturate(1.45) contrast(0.95) brightness(0.95) hue-rotate(-15deg)',
     canvasFilter:
-      "sepia(0.55) saturate(1.45) contrast(0.95) brightness(0.95) hue-rotate(-15deg)",
-    previewType: "image",
+      'sepia(0.55) saturate(1.45) contrast(0.95) brightness(0.95) hue-rotate(-15deg)',
+    previewType: 'image',
   },
   {
-    id: "nostalgia",
-    label: "Nostalgia",
-    css: "sepia(0.35) saturate(0.7) contrast(0.95) brightness(1.02) hue-rotate(5deg)",
+    id: 'nostalgia',
+    label: 'Nostalgia',
+    css: 'sepia(0.35) saturate(0.7) contrast(0.95) brightness(1.02) hue-rotate(5deg)',
     canvasFilter:
-      "sepia(0.35) saturate(0.7) contrast(0.95) brightness(1.02) hue-rotate(5deg)",
-    previewType: "image",
+      'sepia(0.35) saturate(0.7) contrast(0.95) brightness(1.02) hue-rotate(5deg)',
+    previewType: 'image',
   },
 ];
 export const getCameraAspectStyle = (template, capturingIndex = 0) => {
-    const config = LAYOUT_CONFIGS?.[template];
+  const config = LAYOUT_CONFIGS?.[template];
 
-    if (!config || !config.slots?.length) {
-        return {
-            aspectRatio: "3/4",
-            maxWidth: "420px"
-        };
-    }
-
-    const index = Math.min(capturingIndex, config.slots.length - 1);
-    const slot = config.slots[index];
-
+  if (!config || !config.slots?.length) {
     return {
-        aspectRatio: `${slot.w}/${slot.h}`,
-        maxWidth: "420px"
+      aspectRatio: '3/4',
+      maxWidth: '420px',
     };
+  }
+
+  const index = Math.min(capturingIndex, config.slots.length - 1);
+  const slot = config.slots[index];
+
+  return {
+    aspectRatio: `${slot.w}/${slot.h}`,
+    maxWidth: '420px',
+  };
 };
 
-export const getSlotAspectClass = (template) => {
-  return "w-full h-full object-cover";
+export const getSlotAspectClass = () => {
+  return 'w-full h-full object-cover';
 };
 
 export const getSlotAspectStyle = (template) => {
   const config = LAYOUT_CONFIGS?.[template];
   if (!config || !config.slots?.length) {
-    return { aspectRatio: "4 / 3" };
+    return { aspectRatio: '4 / 3' };
   }
   const slot = config.slots[0];
   return { aspectRatio: `${slot.w} / ${slot.h}` };

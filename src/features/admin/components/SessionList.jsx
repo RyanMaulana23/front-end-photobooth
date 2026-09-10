@@ -108,6 +108,21 @@ export default function SessionList({
   );
   const now = useRelativeTimeTicker(sessionTimestamps);
 
+  const handleDownload = async (selectedPhoto) => {
+    const response = await fetch(selectedPhoto);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = selectedPhoto.split('/').pop();
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -341,11 +356,6 @@ export default function SessionList({
               customer.instagramUsername ||
               customer.instagram_username ||
               customer.instagram;
-            const customerPhone =
-              customer.phoneNumber ||
-              customer.phone_number ||
-              customer.phone ||
-              customer.hp;
 
             const hasCustomerData = Boolean(
               customerName || customerEmail || customerNpm,
@@ -449,7 +459,7 @@ export default function SessionList({
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 p-3.5 rounded-xl bg-sidebar/50 text-xs">
                     <div>
                       <span className="text-[10px] uppercase font-bold text-[#a79c8c] block">
-                        Nama Pelanggan
+                        Nama
                       </span>
                       <span className="font-semibold text-ink">
                         {customerName || '-'}
@@ -459,9 +469,15 @@ export default function SessionList({
                       <span className="text-[10px] uppercase font-bold text-[#a79c8c] block">
                         Email
                       </span>
-                      <span className="font-medium text-terracotta">
-                        {customerEmail || '-'}
-                      </span>
+                      <a
+                        href={`mailto:${customerEmail}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span className="font-medium text-terracotta">
+                          {customerEmail || '-'}
+                        </span>
+                      </a>
                     </div>
                     <div>
                       <span className="text-[10px] uppercase font-bold text-[#a79c8c] block">
@@ -474,13 +490,17 @@ export default function SessionList({
                     </div>
                     <div>
                       <span className="text-[10px] uppercase font-bold text-[#a79c8c] block">
-                        Instagram / HP
+                        Instagram
                       </span>
-                      <span className="text-ink">
-                        {customerInsta
-                          ? `@${customerInsta.replace(/^@/, '')}`
-                          : customerPhone || '-'}
-                      </span>
+                      <a
+                        href={`https://www.instagram.com/${customerInsta}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span className="text-ink hover:underline">
+                          @{customerInsta}
+                        </span>
+                      </a>
                     </div>
                   </div>
                 ) : (
@@ -572,13 +592,39 @@ export default function SessionList({
           onClick={() => setSelectedPhoto(null)}
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
         >
-          <div className="relative max-w-3xl max-h-[85vh] bg-white rounded-2xl p-2 shadow-2xl overflow-hidden">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-3xl max-h-[85vh] bg-white rounded-2xl p-2 shadow-2xl overflow-hidden"
+          >
+            {/* Tombol Unduh */}
+            <button
+              onClick={() => handleDownload(selectedPhoto)}
+              className="absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full bg-black/60 hover:bg-black text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              Unduh
+            </button>
+
+            {/* Tombol Close */}
             <button
               onClick={() => setSelectedPhoto(null)}
               className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center text-sm font-bold hover:bg-black transition-colors cursor-pointer"
             >
               ✕
             </button>
+
             <img
               src={selectedPhoto}
               alt="Preview"

@@ -6,7 +6,12 @@ import {
   resolveSessionTimestamp,
 } from '../../../utils/dateHelper';
 
-export default function CustomerTable({ customers = [], isLoading = false, onSearchChange, searchEmail = '' }) {
+export default function CustomerTable({
+  customers = [],
+  isLoading = false,
+  onSearchChange,
+  searchEmail = '',
+}) {
   const [localSearch, setLocalSearch] = useState(searchEmail);
 
   const handleSearchSubmit = (e) => {
@@ -40,11 +45,24 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
   return (
     <div className="space-y-4">
       {/* Search Filter Header */}
-      <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      <form
+        onSubmit={handleSearchSubmit}
+        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
+      >
         <div className="relative flex-1 max-w-md">
           <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a79c8c] pointer-events-none">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </span>
           <input
@@ -78,7 +96,7 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
           <thead>
             <tr className="border-b border-line/80 bg-sidebar/60 text-[11px] font-mono uppercase tracking-wider text-ink/70">
               <th className="py-3.5 px-4 font-bold">No</th>
-              <th className="py-3.5 px-4 font-bold">Nama Lengkap</th>
+              <th className="py-3.5 px-4 font-bold">Nama</th>
               <th className="py-3.5 px-4 font-bold">Email</th>
               <th className="py-3.5 px-4 font-bold">NPM</th>
               <th className="py-3.5 px-4 font-bold">Jurusan</th>
@@ -91,7 +109,9 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
             {customers.length === 0 ? (
               <tr>
                 <td colSpan={8} className="py-10 text-center text-[#7a7266]">
-                  <p className="font-semibold">Tidak ada data pelanggan ditemukan.</p>
+                  <p className="font-semibold">
+                    Tidak ada data pelanggan ditemukan.
+                  </p>
                 </td>
               </tr>
             ) : (
@@ -103,16 +123,41 @@ export default function CustomerTable({ customers = [], isLoading = false, onSea
                   c.createdAt || c.created_at,
                 );
                 return (
-                  <tr key={c.id || index} className="hover:bg-cream/50 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-[#a79c8c]">{index + 1}</td>
-                    <td className="py-3.5 px-4 font-semibold text-maroon">{name}</td>
-                    <td className="py-3.5 px-4 font-medium text-terracotta">{c.email || '-'}</td>
+                  <tr
+                    key={c.id || index}
+                    className="hover:bg-cream/50 transition-colors"
+                  >
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#a79c8c]">
+                      {index + 1}
+                    </td>
+                    <td className="py-3.5 px-4 font-semibold text-maroon">
+                      {name}
+                    </td>
+                    <td className="py-3.5 px-4 font-medium text-terracotta">
+                      <a
+                        href={c.email ? `mailto:${c.email}` : '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        {c.email || '-'}
+                      </a>
+                    </td>
                     <td className="py-3.5 px-4 font-mono">{c.npm || '-'}</td>
                     <td className="py-3.5 px-4">{major}</td>
                     <td className="py-3.5 px-4 text-[#7a7266]">
-                      {c.instagramUsername ? `@${c.instagramUsername.replace(/^@/, '')}` : '-'}
+                      <a
+                        href={`https://www.instagram.com/${c.instagramUsername}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        @{c.instagramUsername}
+                      </a>
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-[#7a7266]">{c.phoneNumber || '-'}</td>
+                    <td className="py-3.5 px-4 font-mono text-[#7a7266]">
+                      {c.phoneNumber || '-'}
+                    </td>
                     <td className="py-3.5 px-4 text-[#7a7266]">
                       <div
                         className="relative group/ctime cursor-default flex flex-col font-mono text-[11px]"

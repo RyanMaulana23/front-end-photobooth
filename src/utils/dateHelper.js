@@ -92,7 +92,9 @@ export function formatRelativeTime(dateInput, nowInput = Date.now()) {
   // Calculate calendar day difference in WIB
   const targetMidnight = getWibYMD(date);
   const nowMidnight = getWibYMD(now);
-  const dayDiff = Math.round((nowMidnight - targetMidnight) / (24 * 60 * 60 * 1000));
+  const dayDiff = Math.round(
+    (nowMidnight - targetMidnight) / (24 * 60 * 60 * 1000),
+  );
 
   // Today (same day in WIB)
   const diffInHours = Math.floor(diffInMinutes / 60);
@@ -161,7 +163,10 @@ const SESSION_STORAGE_KEY = 'dsc_session_timestamps';
  * @param {string} [timestamp=new Date().toISOString()]
  * @returns {string}
  */
-export function saveSessionTriggerTime(sessionId, timestamp = new Date().toISOString()) {
+export function saveSessionTriggerTime(
+  sessionId,
+  timestamp = new Date().toISOString(),
+) {
   if (!sessionId) return timestamp;
   try {
     const raw = localStorage.getItem(SESSION_STORAGE_KEY);
@@ -223,7 +228,7 @@ export function resolveSessionTimestamp(sessionId, rawDate) {
  * @param {Array<string|number|Date>} [_timestamps=[]] - Optional list of timestamps
  * @returns {number} - current timestamp in ms for triggering re-renders
  */
-export function useRelativeTimeTicker(_timestamps = []) {
+export function useRelativeTimeTicker() {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
