@@ -78,7 +78,7 @@ export default function Photobooth() {
 
       {/* Progress Flow Header */}
       {step < STEPS.THANK_YOU && (
-        <div className="w-full max-w-xl flex flex-col gap-2">
+        <div className="w-full max-w-xl flex flex-col gap-2 mb-5">
           <div className="flex justify-between items-center text-sm font-medium text-maroon">
             <span>Alur Sesi Foto</span>
             <span>
