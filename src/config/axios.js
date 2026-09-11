@@ -8,6 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  
 });
 
 // Attach bearer token if available in localStorage

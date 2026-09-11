@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import imageCompression from 'browser-image-compression';
 import api from '../../../config/axios';
 import { saveSessionTriggerTime } from '../../../utils/dateHelper';
 
@@ -71,7 +72,9 @@ export function useCreatePhotoSession() {
       if (sessionData?.id) {
         saveSessionTriggerTime(
           sessionData.id,
-          sessionData.createdAt || sessionData.created_at || new Date().toISOString(),
+          sessionData.createdAt ||
+            sessionData.created_at ||
+            new Date().toISOString(),
         );
       }
       return sessionData;
@@ -146,13 +149,22 @@ export function useSubmitPhotoboothSession() {
       onStageChange,
     }) => {
       if (!sessionId) {
-        throw new Error('ID sesi foto tidak ditemukan. Silakan mulai sesi baru.');
+        throw new Error(
+          'ID sesi foto tidak ditemukan. Silakan mulai sesi baru.',
+        );
       }
 
       updateStage(onStageChange, 'validating');
 
       const fileObjects = [];
       const photoDataUrls = photos.filter(Boolean);
+
+      const compressionOptions = {
+        maxSizeMB: 1, // Maksimal 1MB, sesuaikan jika butuh lebih kecil/besar
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+
       for (let index = 0; index < photoDataUrls.length; index += 1) {
         const photoDataUrl = photoDataUrls[index];
         updateStage(onStageChange, 'uploadingPhotos', {
@@ -162,13 +174,45 @@ export function useSubmitPhotoboothSession() {
 
         if (photoDataUrl) {
           const file = dataURLtoFile(photoDataUrl, `photo-${index + 1}.png`);
-          if (file) fileObjects.push(file);
+          if (file) {
+            try {
+              const compressedFile = await imageCompression(
+                file,
+                compressionOptions,
+              );
+              // Memastikan hasil kompresi tetap berupa File dengan nama dan ekstensi asli
+              const finalFile = new File([compressedFile], file.name, {
+                type: compressedFile.type || file.type,
+              });
+              fileObjects.push(finalFile);
+            } catch (error) {
+              console.error(`Gagal mengompresi foto ${index + 1}:`, error);
+              fileObjects.push(file); // Fallback ke original
+            }
+          }
         }
       }
 
       if (compiledStrip) {
-        const stripFile = dataURLtoFile(compiledStrip, `strip-${sessionId}.png`);
-        if (stripFile) fileObjects.push(stripFile);
+        const stripFile = dataURLtoFile(
+          compiledStrip,
+          `strip-${sessionId}.png`,
+        );
+        if (stripFile) {
+          try {
+            const compressedStrip = await imageCompression(
+              stripFile,
+              compressionOptions,
+            );
+            const finalStrip = new File([compressedStrip], stripFile.name, {
+              type: compressedStrip.type || stripFile.type,
+            });
+            fileObjects.push(finalStrip);
+          } catch (error) {
+            console.error('Gagal mengompresi photostrip:', error);
+            fileObjects.push(stripFile); // Fallback ke original
+          }
+        }
       }
 
       const uploadedPhotoCount = photoDataUrls.length;
